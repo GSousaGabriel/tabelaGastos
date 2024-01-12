@@ -1,0 +1,23 @@
+::ng-deep body {
+    margin: 0 !important;
+}
+
+header {
+    background-color: var(--blue-400);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h3 {
+    margin: 0;
+    padding-left: 1em;
+}
+
+header img {
+    margin-right: 2em;
+    border-radius: 50%;
+    overflow: hidden;
+    width: 50px;
+    height: 50px;
+}
