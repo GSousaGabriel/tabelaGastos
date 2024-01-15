@@ -19,7 +19,8 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 24,
         inventoryStatus: 'INSTOCK',
-        rating: 5
+        recurrence: 5,
+        paid: true
       },
       {
         id: '1001',
@@ -31,7 +32,8 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 61,
         inventoryStatus: 'OUTOFSTOCK',
-        rating: 4
+        recurrence: 4,
+        paid: true
       },
       {
         id: '1002',
@@ -43,7 +45,8 @@ export class MainTableService {
         category: 'Fitness',
         quantity: 2,
         inventoryStatus: 'LOWSTOCK',
-        rating: 3
+        recurrence: 3,
+        paid: true
       },
       {
         id: '1003',
@@ -55,7 +58,8 @@ export class MainTableService {
         category: 'Clothing',
         quantity: 25,
         inventoryStatus: 'INSTOCK',
-        rating: 5
+        recurrence: 5,
+        paid: true
       },
       {
         id: '1004',
@@ -67,7 +71,8 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 73,
         inventoryStatus: 'INSTOCK',
-        rating: 4
+        recurrence: 4,
+        paid: true
       },
       {
         id: '1005',
@@ -79,7 +84,8 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 0,
         inventoryStatus: 'OUTOFSTOCK',
-        rating: 4
+        recurrence: 4,
+        paid: true
       },
       {
         id: '1006',
@@ -91,7 +97,8 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 5,
         inventoryStatus: 'LOWSTOCK',
-        rating: 3
+        recurrence: 3,
+        paid: true
       },
       {
         id: '1007',
@@ -103,7 +110,8 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 23,
         inventoryStatus: 'INSTOCK',
-        rating: 5
+        recurrence: 5,
+        paid: true
       },
       {
         id: '1008',
@@ -115,7 +123,8 @@ export class MainTableService {
         category: 'Electronics',
         quantity: 2,
         inventoryStatus: 'LOWSTOCK',
-        rating: 4
+        recurrence: 4,
+        paid: true
       },
       {
         id: '1009',
@@ -127,7 +136,8 @@ export class MainTableService {
         category: 'Electronics',
         quantity: 63,
         inventoryStatus: 'INSTOCK',
-        rating: 3
+        recurrence: 3,
+        paid: true
       },
       {
         id: '1010',
@@ -139,7 +149,8 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 0,
         inventoryStatus: 'OUTOFSTOCK',
-        rating: 4
+        recurrence: 4,
+        paid: true
       },
       {
         id: '1011',
@@ -151,7 +162,7 @@ export class MainTableService {
         category: 'Electronics',
         quantity: 23,
         inventoryStatus: 'INSTOCK',
-        rating: 4
+        recurrence: 4
       },
       {
         id: '1012',
@@ -163,7 +174,7 @@ export class MainTableService {
         category: 'Clothing',
         quantity: 74,
         inventoryStatus: 'INSTOCK',
-        rating: 5
+        recurrence: 5
       },
       {
         id: '1013',
@@ -175,7 +186,7 @@ export class MainTableService {
         category: 'Clothing',
         quantity: 0,
         inventoryStatus: 'OUTOFSTOCK',
-        rating: 3
+        recurrence: 3
       },
       {
         id: '1014',
@@ -187,7 +198,7 @@ export class MainTableService {
         category: 'Electronics',
         quantity: 8,
         inventoryStatus: 'LOWSTOCK',
-        rating: 5
+        recurrence: 5
       },
       {
         id: '1015',
@@ -199,7 +210,7 @@ export class MainTableService {
         category: 'Clothing',
         quantity: 34,
         inventoryStatus: 'INSTOCK',
-        rating: 4
+        recurrence: 4
       },
       {
         id: '1016',
@@ -211,7 +222,7 @@ export class MainTableService {
         category: 'Fitness',
         quantity: 12,
         inventoryStatus: 'INSTOCK',
-        rating: 3
+        recurrence: 3
       },
       {
         id: '1017',
@@ -223,7 +234,7 @@ export class MainTableService {
         category: 'Clothing',
         quantity: 42,
         inventoryStatus: 'INSTOCK',
-        rating: 4
+        recurrence: 4
       },
       {
         id: '1018',
@@ -235,7 +246,7 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 41,
         inventoryStatus: 'INSTOCK',
-        rating: 5
+        recurrence: 5
       },
       {
         id: '1019',
@@ -247,7 +258,7 @@ export class MainTableService {
         category: 'Fitness',
         quantity: 63,
         inventoryStatus: 'INSTOCK',
-        rating: 4
+        recurrence: 4
       },
       {
         id: '1020',
@@ -259,7 +270,7 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 0,
         inventoryStatus: 'OUTOFSTOCK',
-        rating: 4
+        recurrence: 4
       },
       {
         id: '1021',
@@ -271,7 +282,7 @@ export class MainTableService {
         category: 'Fitness',
         quantity: 6,
         inventoryStatus: 'LOWSTOCK',
-        rating: 3
+        recurrence: 3
       },
       {
         id: '1022',
@@ -283,7 +294,7 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 62,
         inventoryStatus: 'INSTOCK',
-        rating: 4
+        recurrence: 4
       },
       {
         id: '1023',
@@ -295,7 +306,7 @@ export class MainTableService {
         category: 'Clothing',
         quantity: 2,
         inventoryStatus: 'LOWSTOCK',
-        rating: 5
+        recurrence: 5
       },
       {
         id: '1024',
@@ -307,7 +318,7 @@ export class MainTableService {
         category: 'Clothing',
         quantity: 0,
         inventoryStatus: 'INSTOCK',
-        rating: 4
+        recurrence: 4
       },
       {
         id: '1025',
@@ -319,7 +330,7 @@ export class MainTableService {
         category: 'Clothing',
         quantity: 52,
         inventoryStatus: 'INSTOCK',
-        rating: 4
+        recurrence: 4
       },
       {
         id: '1026',
@@ -331,7 +342,7 @@ export class MainTableService {
         category: 'Clothing',
         quantity: 3,
         inventoryStatus: 'LOWSTOCK',
-        rating: 3
+        recurrence: 3
       },
       {
         id: '1027',
@@ -343,7 +354,7 @@ export class MainTableService {
         category: 'Electronics',
         quantity: 35,
         inventoryStatus: 'INSTOCK',
-        rating: 3
+        recurrence: 3
       },
       {
         id: '1028',
@@ -355,7 +366,7 @@ export class MainTableService {
         category: 'Fitness',
         quantity: 15,
         inventoryStatus: 'INSTOCK',
-        rating: 5
+        recurrence: 5
       },
       {
         id: '1029',
@@ -367,12 +378,12 @@ export class MainTableService {
         category: 'Fitness',
         quantity: 25,
         inventoryStatus: 'INSTOCK',
-        rating: 8
+        recurrence: 8
       }
     ];
   }
 
   getProductsMini() {
-    return Promise.resolve(this.getProductsData().slice(0, 5));
+    return Promise.resolve(this.getProductsData().slice(0, 2));
   }
 }

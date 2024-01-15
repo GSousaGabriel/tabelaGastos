@@ -1,5 +1,5 @@
 import { AfterViewInit, Component, ElementRef, signal } from '@angular/core';
-import { FormControl, FormGroup, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
@@ -26,7 +26,7 @@ export class LoginComponent implements AfterViewInit {
     hasSpecialChar: false,
   });
   loading = signal(false);
-  loginForm = new FormGroup({
+  fb = this.formBuilder.group({
     username: new FormControl('', [Validators.required, Validators.minLength(1)]),
     password: new FormControl('', this.validPass()),
   });
@@ -34,28 +34,29 @@ export class LoginComponent implements AfterViewInit {
   constructor(
     private elementRef: ElementRef,
     private validateLoginService: LoginService,
-    private router: Router
+    private router: Router,
+    private formBuilder: FormBuilder
   ) { }
 
   ngAfterViewInit(): void {
-    const meuBotao = this.elementRef.nativeElement.querySelector('#password');
+    const passwordButton = this.elementRef.nativeElement.querySelector('#password');
 
-    if (meuBotao) {
-      meuBotao.addEventListener('keyup', () => {
+    if (passwordButton) {
+      passwordButton.addEventListener('keyup', () => {
         this.validatePassTips();
       });
     }
   }
 
   validLoginFields(): void {
-    if (this.loginForm.get("password")?.value && this.loginForm.get("username")?.value) this.login();
+    if (this.fb.get("password")?.value && this.fb.get("username")?.value) this.login();
   }
 
   login(): void {
     this.loading.update(newValue => !newValue);
     let valid = false
 
-    if (this.loginForm.valid) {
+    if (this.fb.valid) {
       valid = this.validateLoginService.validateLogin(this.getUserData());
     }
     if (valid) this.router.navigate(["/mainTable"])
@@ -64,15 +65,15 @@ export class LoginComponent implements AfterViewInit {
 
   getUserData(): User {
     const user = {
-      username: this.loginForm.get("username")!.value as string,
-      password: this.loginForm.get("password")!.value as string
+      username: this.fb.get("username")!.value as string,
+      password: this.fb.get("password")!.value as string
     }
 
     return user
   }
 
   validatePassTips() {
-    const pass = this.loginForm.get("password")?.value as string
+    const pass = this.fb.get("password")?.value as string
 
     const hasLowerCase = /[a-z]/.test(pass);
     const hasUpperCase = /[A-Z]/.test(pass);
