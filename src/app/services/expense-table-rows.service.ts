@@ -20,9 +20,11 @@ export class ExpenseTableRowsService {
   }
 
   deleteColumns(columnsToDelete: string[]) {
+    const lockedRows = ["paid", "recurrence", "value"]
+
     this.colsSignal.update(newValue => {
       for (let index = 0; index < newValue.length; index++) {
-        if (newValue[index].field === "paid" || newValue[index].field === "recurrence") {
+        if (lockedRows.includes(newValue[index].field)) {
           continue
         }
 

@@ -6,13 +6,16 @@ import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
+import { ToolbarModule } from 'primeng/toolbar';
+import { MessageService } from 'primeng/api';
+import { InputNumberModule } from 'primeng/inputnumber';
+import { InputSwitchModule } from 'primeng/inputswitch';
+import { DialogModule } from 'primeng/dialog';
+import { ReaisPipe } from '../pipes/reais.pipe';
 import { ShowModalNewRowService } from '../services/show-modal-new-row.service';
 import { ModalColumnEditComponent } from '../features/modal-column-edit/modal-column-edit.component';
 import { Column } from '../interfaces/column';
-import { InputSwitchModule } from 'primeng/inputswitch';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ToolbarModule } from 'primeng/toolbar';
-import { MessageService } from 'primeng/api';
 
 interface City {
   name: string;
@@ -22,7 +25,7 @@ interface City {
 @Component({
   selector: 'app-main-table',
   standalone: true,
-  imports: [FormsModule, ReactiveFormsModule, ModalColumnEditComponent, TableModule, ButtonModule, InputTextModule, CheckboxModule, DropdownModule, InputSwitchModule, ToolbarModule],
+  imports: [ModalColumnEditComponent, ReaisPipe, FormsModule, ReactiveFormsModule, TableModule, DialogModule, ButtonModule, InputTextModule, CheckboxModule, DropdownModule, InputSwitchModule, ToolbarModule, InputNumberModule],
   templateUrl: './main-table.component.html',
   styleUrl: './main-table.component.scss',
   providers: [MessageService]
@@ -31,10 +34,13 @@ export class MainTableComponent {
   products: WritableSignal<any> = signal([])
   timeoutItem!: any;
   periodOptions: City[] | undefined = [];
+  categoryOptions = [{ name: "test", code: "test" }, { name: "fixedValue", code: "fixedValue" }]
   fb = this.formBuilder.group({
-    newCols: [[],]
+    newCols: ["",],
+    passwordtest: ["",]
   })
   selectedProducts!: any;
+  visible = false
 
   constructor(
     private mainTableService: MainTableService,
@@ -59,9 +65,10 @@ export class MainTableComponent {
       [
         { field: 'paid', header: 'Paid', orderActive: false },
         { field: 'recurrence', header: 'Recurrence', orderActive: false },
+        { field: 'category', header: 'Category', orderActive: false },
+        { field: 'value', header: 'Value', orderActive: false },
         { field: 'code', header: 'Code', orderActive: false },
         { field: 'name', header: 'Name', orderActive: false },
-        { field: 'category', header: 'Category', orderActive: false },
         { field: 'quantity', header: 'Quantity', orderActive: false }
       ]
     )
@@ -102,7 +109,7 @@ export class MainTableComponent {
         updatedValues = newValue.filter((val: any) => !this.selectedProducts?.includes(val));
       } else if (newRow) {
         updatedValues = [...newValue, this.getBlankRow()]
-      } else if (data.column === "recurrence") {
+      } else if (data.column === "recurrence" || data.column === "category") {
         updatedValues = newValue
         updatedValues[data.index][data.column].code = data.updatedValue
         updatedValues[data.index][data.column].name = data.updatedValue
@@ -185,5 +192,11 @@ export class MainTableComponent {
 
   openModal(type: string) {
     if (type === "columnsOptions") this.showModalNewRowService.canShow(true)
+  }
+
+  manageCategory() {
+    const pass = this.fb.get("passwordtest")?.value as string
+    this.categoryOptions.push({ name: pass, code: pass })
+    this.visible = false
   }
 }

@@ -1,3 +1,4 @@
+import { FormsModule } from '@angular/forms';
 import { ShowModalNewRowService } from './../../services/show-modal-new-row.service';
 import { Component, effect } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
@@ -9,14 +10,14 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 @Component({
   selector: 'app-modal-column-edit',
   standalone: true,
-  imports: [ButtonModule, DialogModule, InputSwitchModule],
+  imports: [FormsModule, ButtonModule, DialogModule, InputSwitchModule],
   templateUrl: './modal-column-edit.component.html',
   styleUrl: './modal-column-edit.component.scss'
 })
 
 export class ModalColumnEditComponent {
   visible = false;
-  columns!: Column[]
+  columns!: Column[];
 
   constructor(
     private showModalNewRowService: ShowModalNewRowService,

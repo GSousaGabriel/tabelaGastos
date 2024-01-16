@@ -3,9 +3,9 @@
     @for (column of columns; track $index) {
     <div class="flex justify-content-start flex-wrap">
         <div class="col-5">
-            <label [for]="'column___' + $index">{{column.header}}</label>
+            <label for="column">{{column.header}}</label>
         </div>
-        <p-inputSwitch [inputId]="'column___' + $index" (onChange)="updateOrderingRows($index)"></p-inputSwitch>
+        <p-inputSwitch inputId="column" (onChange)="updateOrderingRows($index)" [ngModel]="column.orderActive"></p-inputSwitch>
     </div>
     }
     <p-button (click)="closeModal()" icon="pi pi-check" label="Ok"></p-button>

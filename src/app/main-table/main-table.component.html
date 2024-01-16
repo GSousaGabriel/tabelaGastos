@@ -1,11 +1,10 @@
 <form [formGroup]="fb">
     <div class="card">
         <div class="relative h-full">
-            <div class="absolute top-0 left-0 px-4 py-3 w-full font-bold">
-                <p-toolbar styleClass="mb-4 gap-2">
+            <div class="absolute top-0 left-0 px-4 py-3 w-full h-11rem font-bold">
+                <p-toolbar styleClass="mb-8 gap-2">
                     <ng-template pTemplate="left">
-                        <!-- (click)="openNew()"  -->
-                        <div class="flex flex-column">
+                        <div class="flex flex-column gap-2">
                             <label for="newCols">Add Columns</label>
                             <input pInputText id="newCols" name="newCols" type="text" pInputText
                                 formControlName="newCols" aria-labelledby="newCols" aria-describedby="newCols-help" />
@@ -15,7 +14,7 @@
                         <p-button label="Add" class="ml-3" severity="success" icon="pi pi-plus"
                             (onClick)="addCols(this.fb.get('newCols')?.value)"></p-button>
                         <button pButton pRipple label="Delete Columns" icon="pi pi-trash" class="p-button-danger ml-3"
-                            (click)="deleteColumns(this.fb.get('newCols')?.value)"></button>
+                            (onClick)="deleteColumns(this.fb.get('newCols')?.value)"></button>
                     </ng-template>
                     <ng-template pTemplate="right">
                         <p-button label="configure Columns" severity="help" icon="pi pi-cog"
@@ -23,7 +22,7 @@
                     </ng-template>
                 </p-toolbar>
             </div>
-            <div class="absolute mt-6 p-4 w-full" style="z-index: -1;">
+            <div class="absolute mt-7 p-4 w-full" style="z-index: -1;">
                 <p-table [columns]="expenseTableRowsService.showColsSignal()" [value]="products()" dataKey="id"
                     styleClass="p-datatable-striped mt-8" #dataTable [(selection)]="selectedProducts">
                     <ng-template pTemplate="caption">
@@ -72,7 +71,7 @@
                             <td>
                                 <p-inputSwitch inputId="isPaid" name="isPaid"
                                     (onChange)="updateRow(index, $event.checked, col.field)"
-                                    [(ngModel)]="rowData[col.field]"
+                                    [ngModel]="rowData[col.field]"
                                     [ngModelOptions]="{standalone: true}"></p-inputSwitch>
                             </td>
                             }
@@ -80,19 +79,39 @@
                             <td>
                                 <p-dropdown name="recurrence" [options]="periodOptions" optionLabel="name"
                                     (onChange)="updateRow(index, $event.value.code, col.field)"
-                                    [(ngModel)]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
+                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
+                            </td>
+                            }
+                            @else if (col.field === "category") {
+                            <td class="align-items-center">
+                                <p-dropdown name="category" [options]="categoryOptions" optionLabel="name"
+                                    (onChange)="updateRow(index, $event.value.code, col.field)"
+                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
+                                <i class="pi pi-plus ml-2 cursor-pointer" (click)="visible= true"></i>
                             </td>
                             }
                             @else {
                             <td [pEditableColumn]="rowData[col.field]" pEditableColumnField="{{col.field}}">
                                 <p-cellEditor>
+                                    @if (col.field === "value") {
+                                    <ng-template pTemplate="input">
+                                        <p-inputNumber inputId="value" mode="currency" currency="BRL" locale="pt-BR"
+                                            [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
+                                            (onInput)="updateRow(index, $event.value, col.field)">
+                                        </p-inputNumber>
+                                    </ng-template>
+                                    <ng-template pTemplate="output">
+                                        {{ rowData[col.field] | reais}}
+                                    </ng-template>
+                                    }@else {
                                     <ng-template pTemplate="input">
                                         <input #cellValue pInputText type="text" value="{{rowData[col.field]}}"
                                             (keyup)="updateRow(index, cellValue.value, col.field)" />
                                     </ng-template>
                                     <ng-template pTemplate="output">
-                                        {{ rowData[col.field] }}
+                                        {{ rowData[col.field]}}
                                     </ng-template>
+                                    }
                                 </p-cellEditor>
                             </td>
                             }
@@ -111,4 +130,16 @@
             }
         </div>
     </div>
+    <p-dialog [(visible)]="visible" header="Manage category">
+        <div class="inline-flex flex-column gap-2 pb-2">
+            <label for="passwordtest" class="">Category</label>
+            <input pInputText id="passwordtest" formControlName="passwordtest" class="p-3" type="text" />
+        </div>
+        <div class="flex align-items-center justify-content-center gap-2">
+            <p-button label="Add" icon="pi pi-plus" severity="success"
+                (onClick)="manageCategory()"></p-button>
+            <p-button label="Remove" icon="pi pi-plus" severity="danger"
+                (onClick)="manageCategory()"></p-button>
+        </div>
+    </p-dialog>
 </form>
