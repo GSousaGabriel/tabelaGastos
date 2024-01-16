@@ -19,7 +19,7 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 24,
         inventoryStatus: 'INSTOCK',
-        recurrence: 5,
+        recurrence: {name: "5", code: '5'},
         paid: true
       },
       {
@@ -32,8 +32,8 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 61,
         inventoryStatus: 'OUTOFSTOCK',
-        recurrence: 4,
-        paid: true
+        recurrence: {name: "1", code: '1'},
+        paid: false
       },
       {
         id: '1002',
@@ -45,7 +45,7 @@ export class MainTableService {
         category: 'Fitness',
         quantity: 2,
         inventoryStatus: 'LOWSTOCK',
-        recurrence: 3,
+        recurrence: {name: "2", code: '2'},
         paid: true
       },
       {
@@ -58,7 +58,7 @@ export class MainTableService {
         category: 'Clothing',
         quantity: 25,
         inventoryStatus: 'INSTOCK',
-        recurrence: 5,
+        recurrence: {name: "7", code: '7'},
         paid: true
       },
       {
@@ -71,7 +71,7 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 73,
         inventoryStatus: 'INSTOCK',
-        recurrence: 4,
+        recurrence: {name: "9", code: "9"},
         paid: true
       },
       {
@@ -84,7 +84,7 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 0,
         inventoryStatus: 'OUTOFSTOCK',
-        recurrence: 4,
+        recurrence: {name: "15", code: '15'},
         paid: true
       },
       {
@@ -97,7 +97,7 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 5,
         inventoryStatus: 'LOWSTOCK',
-        recurrence: 3,
+        recurrence: {name: "13", code: '13'},
         paid: true
       },
       {
@@ -110,7 +110,7 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 23,
         inventoryStatus: 'INSTOCK',
-        recurrence: 5,
+        recurrence: {name: "10", code: '10'},
         paid: true
       },
       {
@@ -384,6 +384,6 @@ export class MainTableService {
   }
 
   getProductsMini() {
-    return Promise.resolve(this.getProductsData().slice(0, 2));
+    return Promise.resolve(this.getProductsData().slice(0, 6));
   }
 }

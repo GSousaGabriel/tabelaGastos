@@ -15,8 +15,28 @@ export class ExpenseTableRowsService {
     this.colsSignal.set(newValue);
   }
 
-  updateColumns(newCols: Column[]) {
-    this.colsSignal.update(newValue => [...newValue, ...newCols])
+  updateColumns(newColumns: Column[]) {
+    this.colsSignal.update(newValue => [...newValue, ...newColumns])
+  }
+
+  deleteColumns(columnsToDelete: string[]) {
+    this.colsSignal.update(newValue => {
+      for (let index = 0; index < newValue.length; index++) {
+        if (newValue[index].field === "paid" || newValue[index].field === "recurrence") {
+          continue
+        }
+
+        for (let i = 0; i < columnsToDelete.length; i++) {
+          const isEqual = newValue[index].field.toUpperCase() === columnsToDelete[i].toUpperCase()
+
+          if (isEqual) {
+            newValue.splice(index, 1)
+          }
+        }
+      }
+
+      return newValue
+    })
   }
 
   updateColumnsOrdering(index: number) {

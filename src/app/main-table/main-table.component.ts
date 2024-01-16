@@ -10,7 +10,9 @@ import { ShowModalNewRowService } from '../services/show-modal-new-row.service';
 import { ModalColumnEditComponent } from '../features/modal-column-edit/modal-column-edit.component';
 import { Column } from '../interfaces/column';
 import { InputSwitchModule } from 'primeng/inputswitch';
-import { FormArray, FormBuilder, ReactiveFormsModule, UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ToolbarModule } from 'primeng/toolbar';
+import { MessageService } from 'primeng/api';
 
 interface City {
   name: string;
@@ -20,30 +22,27 @@ interface City {
 @Component({
   selector: 'app-main-table',
   standalone: true,
-  imports: [ReactiveFormsModule, ModalColumnEditComponent, TableModule, ButtonModule, InputTextModule, CheckboxModule, DropdownModule, InputSwitchModule],
+  imports: [FormsModule, ReactiveFormsModule, ModalColumnEditComponent, TableModule, ButtonModule, InputTextModule, CheckboxModule, DropdownModule, InputSwitchModule, ToolbarModule],
   templateUrl: './main-table.component.html',
   styleUrl: './main-table.component.scss',
-  providers: [FormBuilder]
+  providers: [MessageService]
 })
 export class MainTableComponent {
   products: WritableSignal<any> = signal([])
   timeoutItem!: any;
   periodOptions: City[] | undefined = [];
-  newCols = '';
   fb = this.formBuilder.group({
-    isPaid: this.formBuilder.array([])
+    newCols: [[],]
   })
+  selectedProducts!: any;
 
   constructor(
     private mainTableService: MainTableService,
     protected showModalNewRowService: ShowModalNewRowService,
     protected expenseTableRowsService: ExpenseTableRowsService,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private messageService: MessageService
   ) { }
-
-  get isPaid() {
-    return this.fb.controls["isPaid"] as FormArray;
-  }
 
   ngOnInit() {
     this.mainTableService.getProductsMini().then((data: any) => {
@@ -66,19 +65,9 @@ export class MainTableComponent {
         { field: 'quantity', header: 'Quantity', orderActive: false }
       ]
     )
-
-    
-    this.expenseTableRowsService.showColsSignal().forEach(linha => this.criarEnderecoFormGroup(linha.orderActive))
   }
 
-
-  criarEnderecoFormGroup(paid: boolean) {
-    this.isPaid.push(this.formBuilder.group({
-      isPaid: [paid]
-    }))
-  }
-
-  updateRow(index: number, updatedValue: string | boolean | any, column: string) {
+  updateRow(index: number, updatedValue: string | boolean, column: string) {
     if (this.timeoutItem) {
       clearTimeout(this.timeoutItem)
     }
@@ -98,12 +87,25 @@ export class MainTableComponent {
     }
   }
 
-  updateTableData(newRow: boolean, data: any) {
-    this.products.update(newValue => {
-      let updatedValues = [];
+  deleteSelectedProducts() {
+    this.updateTableData(false, null, true)
+    this.selectedProducts = null;
+    this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
 
-      if (newRow) {
+  }
+
+  updateTableData(newRow: boolean, data: any, deleteRow = false) {
+    this.products.update(newValue => {
+      let updatedValues: any[] = [];
+
+      if (deleteRow) {
+        updatedValues = newValue.filter((val: any) => !this.selectedProducts?.includes(val));
+      } else if (newRow) {
         updatedValues = [...newValue, this.getBlankRow()]
+      } else if (data.column === "recurrence") {
+        updatedValues = newValue
+        updatedValues[data.index][data.column].code = data.updatedValue
+        updatedValues[data.index][data.column].name = data.updatedValue
       } else {
         updatedValues = newValue
         updatedValues[data.index][data.column] = data.updatedValue
@@ -114,11 +116,15 @@ export class MainTableComponent {
 
   getBlankRow() {
     const cols = this.expenseTableRowsService.showColsSignal();
-    const newRow: { [key: string]: string } = {};
+    const newRow: { [key: string]: string | { name: string, code: string } } = {};
 
     for (let index = 0; index < cols.length; index++) {
       const field = cols[index].field;
       newRow[field] = "";
+
+      if (field === "recurrence") {
+        newRow[field] = { name: "1", code: '1' };
+      }
     }
 
     return newRow
@@ -127,22 +133,46 @@ export class MainTableComponent {
   addCols(colsToAdd: string | null | undefined) {
     if (colsToAdd) {
       const newCols = this.formatNewCols(colsToAdd);
-
       this.expenseTableRowsService.updateColumns(newCols);
     }
   }
 
+  deleteColumns(colsToDelete: string | null | undefined) {
+    if (colsToDelete) {
+      const columnsArray = colsToDelete.split(",");
+      this.expenseTableRowsService.deleteColumns(columnsArray);
+    }
+  }
+
+
   formatNewCols(colsToFormat: string): Column[] {
-    const cols = colsToFormat.split(",");
+    const cols = this.columnsAlreadyAdded(colsToFormat)
     const formattedCols = [];
 
-    for (let index = 0; index < cols.length; index++) {
-      let field = cols[index].toLowerCase();
-      let header = this.capitalizeFirstLetter(field)
-      formattedCols.push({ field, header, orderActive: false })
+    if (cols.length > 0) {
+      for (let index = 0; index < cols.length; index++) {
+        let field = cols[index].toLowerCase();
+        let header = this.capitalizeFirstLetter(field)
+        formattedCols.push({ field, header, orderActive: false })
+      }
     }
-
     return formattedCols
+  }
+
+  columnsAlreadyAdded(colsToValidate: string) {
+    const columns = colsToValidate.split(",")
+    const allColumns = this.expenseTableRowsService.showColsSignal();
+    let validColumns = [];
+
+    for (let index = 0; index < columns.length; index++) {
+      const columnExists = allColumns.findIndex(column => column.field.toUpperCase() === columns[index].toUpperCase())
+
+      if (columnExists != -1) {
+        continue
+      }
+      validColumns.push(columns[index])
+    }
+    return validColumns
   }
 
   capitalizeFirstLetter(value: string) {
