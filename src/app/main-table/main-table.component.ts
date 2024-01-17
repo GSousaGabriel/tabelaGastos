@@ -12,10 +12,12 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { DialogModule } from 'primeng/dialog';
 import { ReaisPipe } from '../pipes/reais.pipe';
+import { Column } from '../interfaces/column';
+import { Category } from '../interfaces/category';
 import { ShowModalNewRowService } from '../services/show-modal-new-row.service';
 import { ModalColumnEditComponent } from '../features/modal-column-edit/modal-column-edit.component';
-import { Column } from '../interfaces/column';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ExpenseCategoriesService } from '../services/expense-categories.service';
 
 interface City {
   name: string;
@@ -31,13 +33,13 @@ interface City {
   providers: [MessageService]
 })
 export class MainTableComponent {
-  products: WritableSignal<any> = signal([])
+  products: WritableSignal<any> = signal([]);
+  categoryOptions: WritableSignal<Category[]> = signal([]);
   timeoutItem!: any;
   periodOptions: City[] | undefined = [];
-  categoryOptions = [{ name: "test", code: "test" }, { name: "fixedValue", code: "fixedValue" }]
   fb = this.formBuilder.group({
-    newCols: ["",],
-    passwordtest: ["",]
+    newColumns: ["",],
+    categoriesToAdd: ["",]
   })
   selectedProducts!: any;
   visible = false
@@ -47,7 +49,8 @@ export class MainTableComponent {
     protected showModalNewRowService: ShowModalNewRowService,
     protected expenseTableRowsService: ExpenseTableRowsService,
     private formBuilder: FormBuilder,
-    private messageService: MessageService
+    private messageService: MessageService,
+    protected categoryService: ExpenseCategoriesService
   ) { }
 
   ngOnInit() {
@@ -137,9 +140,9 @@ export class MainTableComponent {
     return newRow
   }
 
-  addCols(colsToAdd: string | null | undefined) {
+  addColumns(colsToAdd: string | null | undefined) {
     if (colsToAdd) {
-      const newCols = this.formatNewCols(colsToAdd);
+      const newCols = this.formatNewColumns(colsToAdd);
       this.expenseTableRowsService.updateColumns(newCols);
     }
   }
@@ -147,39 +150,72 @@ export class MainTableComponent {
   deleteColumns(colsToDelete: string | null | undefined) {
     if (colsToDelete) {
       const columnsArray = colsToDelete.split(",");
-      this.expenseTableRowsService.deleteColumns(columnsArray);
+      const lockedRows = ["paid", "recurrence", "value"]
+      const allColumns = this.expenseTableRowsService.showColsSignal();
+      const newArray = this.deleteArrayValues(allColumns, columnsArray, lockedRows, "field");
+
+      this.expenseTableRowsService.setColumns(newArray)
     }
   }
 
+  manageCategory(add = false) {
+    if (add) {
+      const newCategories = (this.fb.get("categoriesToAdd")?.value as string).split(",");
+      const currentCategories = this.categoryService.showCategorySignal();
+      this.validadeArrayUniqueValues(newCategories, currentCategories, "code")
+      
+      this.visible = false
+      this.fb.get("categoriesToAdd")?.setValue("")
+    }
+  }
 
-  formatNewCols(colsToFormat: string): Column[] {
-    const cols = this.columnsAlreadyAdded(colsToFormat)
+  deleteArrayValues(actualColumns: Column[], columnsToDelete: string[], exceptions: string[], additionalField: string) {
+
+    for (let index = 0; index < actualColumns.length; index++) {
+      if (exceptions.includes(actualColumns[index].field)) {
+        continue
+      }
+
+      for (let i = 0; i < columnsToDelete.length; i++) {
+        const isEqual = (actualColumns[index][additionalField] as string).toUpperCase() === columnsToDelete[i].toUpperCase()
+
+        if (isEqual) {
+          actualColumns.splice(index, 1)
+        }
+      }
+    }
+
+    return actualColumns
+  }
+
+  formatNewColumns(columnsToFormat: string): Column[] {
+    const allColumns = this.expenseTableRowsService.showColsSignal();
+    const columnsArray = columnsToFormat.split(",");
+    const cols = this.validadeArrayUniqueValues(columnsArray, allColumns, "field");
     const formattedCols = [];
 
     if (cols.length > 0) {
       for (let index = 0; index < cols.length; index++) {
         let field = cols[index].toLowerCase();
-        let header = this.capitalizeFirstLetter(field)
-        formattedCols.push({ field, header, orderActive: false })
+        let header = this.capitalizeFirstLetter(field);
+        formattedCols.push({ field, header, orderActive: false });
       }
     }
-    return formattedCols
+    return formattedCols;
   }
 
-  columnsAlreadyAdded(colsToValidate: string) {
-    const columns = colsToValidate.split(",")
-    const allColumns = this.expenseTableRowsService.showColsSignal();
-    let validColumns = [];
+  validadeArrayUniqueValues(newValuesArray: string[], actualArray: any[], additionalField: string) {
+    const validValues = [];
 
-    for (let index = 0; index < columns.length; index++) {
-      const columnExists = allColumns.findIndex(column => column.field.toUpperCase() === columns[index].toUpperCase())
+    for (let index = 0; index < newValuesArray.length; index++) {
+      const valueExists = actualArray.findIndex(column => column[additionalField].toUpperCase() === newValuesArray[index].toUpperCase())
 
-      if (columnExists != -1) {
+      if (valueExists != -1) {
         continue
       }
-      validColumns.push(columns[index])
+      validValues.push(newValuesArray[index])
     }
-    return validColumns
+    return validValues
   }
 
   capitalizeFirstLetter(value: string) {
@@ -192,11 +228,5 @@ export class MainTableComponent {
 
   openModal(type: string) {
     if (type === "columnsOptions") this.showModalNewRowService.canShow(true)
-  }
-
-  manageCategory() {
-    const pass = this.fb.get("passwordtest")?.value as string
-    this.categoryOptions.push({ name: pass, code: pass })
-    this.visible = false
   }
 }
