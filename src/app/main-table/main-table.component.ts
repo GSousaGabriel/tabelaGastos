@@ -18,6 +18,7 @@ import { ShowModalNewRowService } from '../services/show-modal-new-row.service';
 import { ModalColumnEditComponent } from '../features/modal-column-edit/modal-column-edit.component';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ExpenseCategoriesService } from '../services/expense-categories.service';
+import { totalExpenseSignal } from '../models/totalExpense.model';
 
 interface City {
   name: string;
@@ -43,9 +44,7 @@ export class MainTableComponent {
   })
   selectedProducts!: any;
   visible = false;
-  total = signal(0);
-  totalPaid = signal(0);
-  totalFixed = signal(0);
+  totals: WritableSignal<totalExpenseSignal> = signal({ total: "0", paid: "0", fixed: "0" });
 
   constructor(
     private mainTableService: MainTableService,
@@ -82,42 +81,28 @@ export class MainTableComponent {
     )
   }
 
-  setTotals(){
-    this.setTotal();
-    this.setTotalPaid();
-    this.setTotalFixed();
-  }
-
-  setTotal() {
+  setTotals() {
     const allProducts = this.products();
-    let total = allProducts.reduce((sum: number, product: any) => sum + product.value,
-      0
-    )
-    this.total.set(total);
-  }
+    const totals = Object.keys(this.totals());
 
-  setTotalPaid() {
-    const allProducts = this.products();
-    let total = allProducts.reduce((sum: number, product: any) => {
-      if (product.paid) {
-        sum = sum + product.value
-      }
-      return sum
-    }, 0
-    );
-    this.totalPaid.set(total.toFixed(2));
-  }
-
-  setTotalFixed() {
-    const allProducts = this.products();
-    let total = allProducts.reduce((sum: number, product: any) => {
-      if (product.fixed) {
-        sum = sum + product.value
-      }
-      return sum
-    }, 0
-    );
-    this.totalFixed.set(total.toFixed(2));
+    for (let index = 0; index < totals.length; index++) {
+      const key = totals[index];
+      let total = allProducts.reduce((sum: number, product: any) => {
+        if (key === "total") {
+          return sum + product.value;
+        } else {
+          if (product[key]) {
+            sum = sum + product.value;
+          }
+          return sum
+        }
+      }, 0
+      );
+      this.totals.update((current) => {
+        current[key] = (+total).toFixed(2);
+        return current
+      });
+    }
   }
 
   updateRow(index: number, updatedValue: string | boolean, column: string) {

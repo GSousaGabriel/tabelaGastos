@@ -28,9 +28,9 @@
                     <p-toolbar styleClass="mt-2 mb-2">
                         <ng-template pTemplate="left">
                             <div>
-                                <label class="mr-3">Total: {{total() | reais}}</label>
-                                <label class="mr-3">Total paid: {{totalPaid() | reais}}</label>
-                                <label class="mr-3">Total fixed: {{totalFixed() | reais}}</label>
+                                <label class="mr-3">Total: {{totals().total | reais}}</label>
+                                <label class="mr-3">Total paid: {{totals().paid | reais}}</label>
+                                <label class="mr-3">Total fixed: {{totals().fixed | reais}}</label>
                             </div>
                         </ng-template>
                         <ng-template pTemplate="right">
