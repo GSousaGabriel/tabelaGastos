@@ -42,7 +42,10 @@ export class MainTableComponent {
     categoriesToAdd: ["",]
   })
   selectedProducts!: any;
-  visible = false
+  visible = false;
+  total = signal(0);
+  totalPaid = signal(0);
+  totalFixed = signal(0);
 
   constructor(
     private mainTableService: MainTableService,
@@ -62,10 +65,12 @@ export class MainTableComponent {
         const fixedValue = (index + 1).toString()
         this.periodOptions?.push({ name: fixedValue, code: fixedValue })
       }
+      this.setTotals();
     });
 
     this.expenseTableRowsService.setColumns(
       [
+        { field: 'fixed', header: 'Fixed', orderActive: false },
         { field: 'paid', header: 'Paid', orderActive: false },
         { field: 'recurrence', header: 'Recurrence', orderActive: false },
         { field: 'category', header: 'Category', orderActive: false },
@@ -77,16 +82,55 @@ export class MainTableComponent {
     )
   }
 
+  setTotals(){
+    this.setTotal();
+    this.setTotalPaid();
+    this.setTotalFixed();
+  }
+
+  setTotal() {
+    const allProducts = this.products();
+    let total = allProducts.reduce((sum: number, product: any) => sum + product.value,
+      0
+    )
+    this.total.set(total);
+  }
+
+  setTotalPaid() {
+    const allProducts = this.products();
+    let total = allProducts.reduce((sum: number, product: any) => {
+      if (product.paid) {
+        sum = sum + product.value
+      }
+      return sum
+    }, 0
+    );
+    this.totalPaid.set(total.toFixed(2));
+  }
+
+  setTotalFixed() {
+    const allProducts = this.products();
+    let total = allProducts.reduce((sum: number, product: any) => {
+      if (product.fixed) {
+        sum = sum + product.value
+      }
+      return sum
+    }, 0
+    );
+    this.totalFixed.set(total.toFixed(2));
+  }
+
   updateRow(index: number, updatedValue: string | boolean, column: string) {
     if (this.timeoutItem) {
-      clearTimeout(this.timeoutItem)
+      clearTimeout(this.timeoutItem);
     }
 
     this.timeoutItem = setTimeout(() => {
-      this.updateTableData(false, { index, updatedValue, column })
+      this.updateTableData(false, { index, updatedValue, column });
+      this.setTotals()
     }, 200);
 
-    this.addRow(index)
+    this.addRow(index);
   }
 
   addRow(index: number) {
@@ -100,6 +144,7 @@ export class MainTableComponent {
   deleteSelectedProducts() {
     this.updateTableData(false, null, true)
     this.selectedProducts = null;
+    this.setTotals()
     this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
 
   }
@@ -150,7 +195,7 @@ export class MainTableComponent {
   deleteColumns(colsToDelete: string | null | undefined) {
     if (colsToDelete) {
       const columnsArray = colsToDelete.split(",");
-      const lockedRows = ["paid", "recurrence", "value"]
+      const lockedRows = ["fixed", "paid", "recurrence", "category", "value"]
       const allColumns = this.expenseTableRowsService.showColsSignal();
       const newArray = this.deleteArrayValues(allColumns, columnsArray, lockedRows, "field");
 
@@ -160,16 +205,32 @@ export class MainTableComponent {
 
   manageCategory(add = false) {
     if (add) {
+      const newValues = []
       const newCategories = (this.fb.get("categoriesToAdd")?.value as string).split(",");
       const currentCategories = this.categoryService.showCategorySignal();
-      this.validadeArrayUniqueValues(newCategories, currentCategories, "code")
-      
-      this.visible = false
-      this.fb.get("categoriesToAdd")?.setValue("")
+      const validValues = this.validadeArrayUniqueValues(newCategories, currentCategories, "code")
+
+      if (validValues.length > 0) {
+        for (let index = 0; index < validValues.length; index++) {
+          let code = validValues[index].toLowerCase();
+          let name = this.capitalizeFirstLetter(code);
+          newValues.push({ name, code });
+        }
+      }
+      this.categoryService.updateCategories(newValues)
+    } else {
+      const categoriesArray = (this.fb.get("categoriesToAdd")?.value as string).split(",");
+      const lockedRows = this.categoryService.getDefaultCategories();
+      const allCategories = this.categoryService.showCategorySignal();
+      const newArray = this.deleteArrayValues(allCategories, categoriesArray, lockedRows, "code");
+
+      this.categoryService.setCategories(newArray)
     }
+    this.visible = false
+    this.fb.get("categoriesToAdd")?.setValue("")
   }
 
-  deleteArrayValues(actualColumns: Column[], columnsToDelete: string[], exceptions: string[], additionalField: string) {
+  deleteArrayValues(actualColumns: any[], columnsToDelete: string[], exceptions: string[], additionalField: string) {
 
     for (let index = 0; index < actualColumns.length; index++) {
       if (exceptions.includes(actualColumns[index].field)) {
@@ -180,7 +241,8 @@ export class MainTableComponent {
         const isEqual = (actualColumns[index][additionalField] as string).toUpperCase() === columnsToDelete[i].toUpperCase()
 
         if (isEqual) {
-          actualColumns.splice(index, 1)
+          actualColumns.splice(index, 1);
+          index--
         }
       }
     }

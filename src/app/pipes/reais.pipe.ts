@@ -6,12 +6,21 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class ReaisPipe implements PipeTransform {
 
-  transform(value: number, ...args: unknown[]): unknown {
+  transform(value: number | string, ...args: unknown[]): unknown {
+
     if (value) {
-      const stringValue = value.toString().replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.')
-      return "R$ " + stringValue
+      value = this.checkAndParseString(value);
+
+      const stringValue = value.toString().replace(".", ",").replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1.');
+      return "R$ " + stringValue;
     }
     return value
   }
 
+  checkAndParseString(value: string | number){
+      if(typeof value === "string"){
+        return (+value).toFixed(2)
+      }
+      return value
+  }
 }

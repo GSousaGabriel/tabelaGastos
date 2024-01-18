@@ -1,130 +1,157 @@
 <form [formGroup]="fb">
     <div class="card">
-        <div class="relative h-full">
+        <div class="absolute h-full w-full">
             <div class="absolute top-0 left-0 px-4 py-3 w-full h-11rem font-bold">
-                <p-toolbar styleClass="mb-8 gap-2">
-                    <ng-template pTemplate="left">
-                        <div class="flex flex-column gap-2">
-                            <label for="newColumns">Add Columns</label>
-                            <input pInputText id="newColumns" name="newColumns" type="text" pInputText
-                                formControlName="newColumns" aria-labelledby="newColumns"
-                                aria-describedby="newColumns-help" />
-                            <small id="newColumns-help">To insert multiple columns, separate them with a
-                                coma(column1,column2).</small>
-                        </div>
-                        <p-button label="Add columns" class="ml-3" severity="success" icon="pi pi-plus"
-                            (onClick)="addColumns(this.fb.get('newColumns')?.value)"></p-button>
-                        <p-button label="Remove columns" icon="pi pi-trash" severity="danger" class="ml-3"
-                            (onClick)="deleteColumns(this.fb.get('newColumns')?.value)"></p-button>
-                    </ng-template>
-                    <ng-template pTemplate="right">
-                        <p-button label="configure Columns" severity="help" icon="pi pi-cog"
-                            (onClick)="openModal('columnsOptions')"></p-button>
-                    </ng-template>
-                </p-toolbar>
-            </div>
-            <div class="absolute mt-7 p-4 w-full" style="z-index: -1;">
-                <p-table [columns]="expenseTableRowsService.showColsSignal()" [value]="products()" dataKey="id"
-                    styleClass="p-datatable-striped mt-8" #dataTable [(selection)]="selectedProducts">
-                    <ng-template pTemplate="caption">
-                        <div class="flex">
-                            <button pButton pRipple label="Delete Selected Items" icon="pi pi-trash"
-                                class="p-button-danger ml-3" (click)="deleteSelectedProducts()"
-                                [disabled]="!selectedProducts || !selectedProducts.length"></button>
-                            <div class="ml-auto">
-                                <button pButton label="Reset filters" class="p-button-outlined"
-                                    icon="pi pi-filter-slash" (click)="clear(dataTable)"></button>
-                                <span class="p-input-icon-left ml-3">
-                                    <i class="pi pi-search"></i>
-                                    <input pInputText type="text"
-                                        (input)="dataTable.filterGlobal($any($event.target).value, 'contains')"
-                                        placeholder="Search keyword" />
-                                </span>
+                <div class="w-full">
+                    <p-toolbar>
+                        <ng-template pTemplate="left">
+                            <div class="flex flex-column gap-2">
+                                <label for="newColumns">Add Columns</label>
+                                <input pInputText id="newColumns" name="newColumns" type="text" pInputText
+                                    formControlName="newColumns" aria-labelledby="newColumns"
+                                    aria-describedby="newColumns-help" />
+                                <small id="newColumns-help">To insert multiple columns, separate them with a
+                                    coma(column1,column2).</small>
                             </div>
-                        </div>
-                    </ng-template>
-                    <ng-template pTemplate="header" let-columns>
-                        <tr>
-                            <th style="width: 4rem">
-                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
-                            </th>
-                            @for (col of columns; track $index) {
-                            @if (col.orderActive) {
-                            <th pSortableColumn="quantity"> {{ col.header }} <p-sortIcon field="quantity"
-                                    pSortableColumnDisabled="false"></p-sortIcon></th>
-                            }
-                            @else {
-                            <th>
-                                {{ col.header }}
-                            </th>
-                            }
-                            }
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="body" let-rowData let-index="rowIndex" let-columns="columns"
-                        let-editing="editing">
-                        <tr>
-                            <td>
-                                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
-                            </td>
-                            @for (col of columns; track $index) {
-                            @if (col.field === "paid") {
-                            <td>
-                                <p-inputSwitch inputId="isPaid" name="isPaid"
-                                    (onChange)="updateRow(index, $event.checked, col.field)"
-                                    [ngModel]="rowData[col.field]"
-                                    [ngModelOptions]="{standalone: true}"></p-inputSwitch>
-                            </td>
-                            }
-                            @else if (col.field === "recurrence") {
-                            <td>
-                                <p-dropdown name="recurrence" [options]="periodOptions" optionLabel="name"
-                                    (onChange)="updateRow(index, $event.value.code, col.field)"
-                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
-                            </td>
-                            }
-                            @else if (col.field === "category") {
-                            <td class="align-items-center">
-                                <p-dropdown name="category" [options]="categoryService.showCategorySignal()"
-                                    optionLabel="name" (onChange)="updateRow(index, $event.value.code, col.field)"
-                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
-                                <i class="pi pi-plus ml-2 cursor-pointer" (click)="visible= true"></i>
-                            </td>
-                            }
-                            @else {
-                            <td [pEditableColumn]="rowData[col.field]" pEditableColumnField="{{col.field}}">
-                                <p-cellEditor>
-                                    @if (col.field === "value") {
-                                    <ng-template pTemplate="input">
-                                        <p-inputNumber inputId="value" mode="currency" currency="BRL" locale="pt-BR"
-                                            [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
-                                            (onInput)="updateRow(index, $event.value, col.field)">
-                                        </p-inputNumber>
-                                    </ng-template>
-                                    <ng-template pTemplate="output">
-                                        {{ rowData[col.field] | reais}}
-                                    </ng-template>
-                                    }@else {
-                                    <ng-template pTemplate="input">
-                                        <input #cellValue pInputText type="text" value="{{rowData[col.field]}}"
-                                            (keyup)="updateRow(index, cellValue.value, col.field)" />
-                                    </ng-template>
-                                    <ng-template pTemplate="output">
-                                        {{ rowData[col.field]}}
-                                    </ng-template>
-                                    }
-                                </p-cellEditor>
-                            </td>
-                            }
-                            }
-                        </tr>
-                    </ng-template>
-                    <ng-template pTemplate="emptymessage">
-                        <tr>
-                            <td colspan="7">Nothing Found.</td>
-                        </tr>
-                    </ng-template>
-                </p-table>
+                            <p-button label="Add columns" class="ml-3" severity="success" icon="pi pi-plus"
+                                (onClick)="addColumns(this.fb.get('newColumns')?.value)"></p-button>
+                            <p-button label="Remove columns" icon="pi pi-trash" severity="danger" class="ml-3"
+                                (onClick)="deleteColumns(this.fb.get('newColumns')?.value)"></p-button>
+                        </ng-template>
+                        <ng-template pTemplate="right">
+                            <p-button label="configure Columns" severity="help" icon="pi pi-cog"
+                                (onClick)="openModal('columnsOptions')"></p-button>
+                        </ng-template>
+                    </p-toolbar>
+                </div>
+                <div>
+                    <p-toolbar styleClass="mt-2 mb-2">
+                        <ng-template pTemplate="left">
+                            <div>
+                                <label class="mr-3">Total: {{total() | reais}}</label>
+                                <label class="mr-3">Total paid: {{totalPaid() | reais}}</label>
+                                <label class="mr-3">Total fixed: {{totalFixed() | reais}}</label>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="right">
+                            <p-button label="Total by category" severity="help" icon="pi pi-cog"
+                                (onClick)="openModal('totalCategory')"></p-button>
+                        </ng-template>
+                    </p-toolbar>
+                </div>
+                <div class="pd-4 w-full">
+                    <p-table [columns]="expenseTableRowsService.showColsSignal()" [value]="products()" dataKey="id"
+                        styleClass="p-datatable-striped" #dataTable [(selection)]="selectedProducts">
+                        <ng-template pTemplate="caption">
+                            <div class="flex">
+                                <button pButton pRipple label="Delete Selected Items" icon="pi pi-trash"
+                                    class="p-button-danger ml-3" (click)="deleteSelectedProducts()"
+                                    [disabled]="!selectedProducts || !selectedProducts.length"></button>
+                                <div class="ml-auto">
+                                    <button pButton label="Reset filters" class="p-button-outlined"
+                                        icon="pi pi-filter-slash" (click)="clear(dataTable)"></button>
+                                    <span class="p-input-icon-left ml-3">
+                                        <i class="pi pi-search"></i>
+                                        <input pInputText type="text"
+                                            (input)="dataTable.filterGlobal($any($event.target).value, 'contains')"
+                                            placeholder="Search keyword" />
+                                    </span>
+                                </div>
+                            </div>
+                        </ng-template>
+                        <ng-template pTemplate="header" let-columns>
+                            <tr>
+                                <th style="width: 4rem">
+                                    <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                </th>
+                                @for (col of columns; track $index) {
+                                @if (col.orderActive) {
+                                <th pSortableColumn="quantity"> {{ col.header }} <p-sortIcon field="quantity"
+                                        pSortableColumnDisabled="false"></p-sortIcon></th>
+                                }
+                                @else {
+                                <th>
+                                    {{ col.header }}
+                                </th>
+                                }
+                                }
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="body" let-rowData let-index="rowIndex" let-columns="columns"
+                            let-editing="editing">
+                            <tr>
+                                <td>
+                                    <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                                </td>
+                                @for (col of columns; track $index) {
+                                @if (col.field === "fixed") {
+                                <td>
+                                    <p-inputSwitch inputId="isFixed" name="isFixed"
+                                        (onChange)="updateRow(index, $event.checked, col.field)"
+                                        [ngModel]="rowData[col.field]"
+                                        [ngModelOptions]="{standalone: true}"></p-inputSwitch>
+                                </td>
+                                }
+                                @else if (col.field === "paid") {
+                                <td>
+                                    <p-inputSwitch inputId="isPaid" name="isPaid"
+                                        (onChange)="updateRow(index, $event.checked, col.field)"
+                                        [ngModel]="rowData[col.field]"
+                                        [ngModelOptions]="{standalone: true}"></p-inputSwitch>
+                                </td>
+                                }
+                                @else if (col.field === "recurrence") {
+                                <td>
+                                    <p-dropdown name="recurrence" [options]="periodOptions" optionLabel="name"
+                                        (onChange)="updateRow(index, $event.value.code, col.field)"
+                                        [ngModel]="rowData[col.field]"
+                                        [ngModelOptions]="{standalone: true}"></p-dropdown>
+                                </td>
+                                }
+                                @else if (col.field === "category") {
+                                <td class="align-items-center">
+                                    <p-dropdown name="category" [options]="categoryService.showCategorySignal()"
+                                        optionLabel="name" (onChange)="updateRow(index, $event.value.code, col.field)"
+                                        [ngModel]="rowData[col.field]"
+                                        [ngModelOptions]="{standalone: true}"></p-dropdown>
+                                    <i class="pi pi-plus ml-2 cursor-pointer" (click)="visible= true"></i>
+                                </td>
+                                }
+                                @else {
+                                <td [pEditableColumn]="rowData[col.field]" pEditableColumnField="{{col.field}}">
+                                    <p-cellEditor>
+                                        @if (col.field === "value") {
+                                        <ng-template pTemplate="input">
+                                            <p-inputNumber inputId="value" mode="currency" currency="BRL" locale="pt-BR"
+                                                [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
+                                                (onInput)="updateRow(index, $event.value, col.field)">
+                                            </p-inputNumber>
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ rowData[col.field] | reais}}
+                                        </ng-template>
+                                        }@else {
+                                        <ng-template pTemplate="input">
+                                            <input #cellValue pInputText type="text" value="{{rowData[col.field]}}"
+                                                (keyup)="updateRow(index, cellValue.value, col.field)" />
+                                        </ng-template>
+                                        <ng-template pTemplate="output">
+                                            {{ rowData[col.field]}}
+                                        </ng-template>
+                                        }
+                                    </p-cellEditor>
+                                </td>
+                                }
+                                }
+                            </tr>
+                        </ng-template>
+                        <ng-template pTemplate="emptymessage">
+                            <tr>
+                                <td colspan="7">Nothing Found.</td>
+                            </tr>
+                        </ng-template>
+                    </p-table>
+                </div>
             </div>
             @if (showModalNewRowService.showModalNewRow()) {
             <app-modal-column-edit></app-modal-column-edit>
