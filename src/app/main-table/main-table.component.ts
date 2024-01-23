@@ -1,24 +1,22 @@
 import { ExpenseTableRowsService } from './../services/expense-table-rows.service';
-import { Component, WritableSignal, signal } from '@angular/core';
+import { Component, ViewChild, WritableSignal, signal } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { MainTableService } from './main-table.service';
 import { ButtonModule } from 'primeng/button';
 import { InputTextModule } from 'primeng/inputtext';
 import { CheckboxModule } from 'primeng/checkbox';
 import { DropdownModule } from 'primeng/dropdown';
-import { ToolbarModule } from 'primeng/toolbar';
 import { MessageService } from 'primeng/api';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { DialogModule } from 'primeng/dialog';
-import { ReaisPipe } from '../pipes/reais.pipe';
-import { Column } from '../interfaces/column';
 import { Category } from '../interfaces/category';
 import { ShowModalNewRowService } from '../services/show-modal-new-row.service';
 import { ModalColumnEditComponent } from '../features/modal-column-edit/modal-column-edit.component';
-import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ExpenseCategoriesService } from '../services/expense-categories.service';
-import { totalExpenseSignal } from '../models/totalExpense.model';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ToolbarColumnComponent } from './features/toolbar-column/toolbar-column.component';
+import { ToolbarTotalsComponent } from './features/toolbar-totals/toolbar-totals.component';
+import { CategoryManagementComponent } from './features/category-management/category-management.component';
 
 interface City {
   name: string;
@@ -28,31 +26,26 @@ interface City {
 @Component({
   selector: 'app-main-table',
   standalone: true,
-  imports: [ModalColumnEditComponent, ReaisPipe, FormsModule, ReactiveFormsModule, TableModule, DialogModule, ButtonModule, InputTextModule, CheckboxModule, DropdownModule, InputSwitchModule, ToolbarModule, InputNumberModule],
+  imports: [ModalColumnEditComponent, ToolbarColumnComponent, ToolbarTotalsComponent, CategoryManagementComponent, FormsModule, ReactiveFormsModule, TableModule, DialogModule, ButtonModule, InputTextModule, CheckboxModule, DropdownModule, InputSwitchModule, InputNumberModule],
   templateUrl: './main-table.component.html',
   styleUrl: './main-table.component.scss',
   providers: [MessageService]
 })
 export class MainTableComponent {
+  @ViewChild(ToolbarTotalsComponent) toolbarTotalsComponent!: ToolbarTotalsComponent;
+  @ViewChild(CategoryManagementComponent) categoryManagementComponent!: CategoryManagementComponent;
+
   products: WritableSignal<any> = signal([]);
   categoryOptions: WritableSignal<Category[]> = signal([]);
   timeoutItem!: any;
   periodOptions: City[] | undefined = [];
-  fb = this.formBuilder.group({
-    newColumns: ["",],
-    categoriesToAdd: ["",]
-  })
   selectedProducts!: any;
-  visible = false;
-  totals: WritableSignal<totalExpenseSignal> = signal({ total: "0", paid: "0", fixed: "0" });
 
   constructor(
     private mainTableService: MainTableService,
     protected showModalNewRowService: ShowModalNewRowService,
     protected expenseTableRowsService: ExpenseTableRowsService,
-    private formBuilder: FormBuilder,
-    private messageService: MessageService,
-    protected categoryService: ExpenseCategoriesService
+    private messageService: MessageService
   ) { }
 
   ngOnInit() {
@@ -64,45 +57,8 @@ export class MainTableComponent {
         const fixedValue = (index + 1).toString()
         this.periodOptions?.push({ name: fixedValue, code: fixedValue })
       }
-      this.setTotals();
+      this.toolbarTotalsComponent.setTotals(this.products());
     });
-
-    this.expenseTableRowsService.setColumns(
-      [
-        { field: 'fixed', header: 'Fixed', orderActive: false },
-        { field: 'paid', header: 'Paid', orderActive: false },
-        { field: 'recurrence', header: 'Recurrence', orderActive: false },
-        { field: 'category', header: 'Category', orderActive: false },
-        { field: 'value', header: 'Value', orderActive: false },
-        { field: 'code', header: 'Code', orderActive: false },
-        { field: 'name', header: 'Name', orderActive: false },
-        { field: 'quantity', header: 'Quantity', orderActive: false }
-      ]
-    )
-  }
-
-  setTotals() {
-    const allProducts = this.products();
-    const totals = Object.keys(this.totals());
-
-    for (let index = 0; index < totals.length; index++) {
-      const key = totals[index];
-      let total = allProducts.reduce((sum: number, product: any) => {
-        if (key === "total") {
-          return sum + product.value;
-        } else {
-          if (product[key]) {
-            sum = sum + product.value;
-          }
-          return sum
-        }
-      }, 0
-      );
-      this.totals.update((current) => {
-        current[key] = (+total).toFixed(2);
-        return current
-      });
-    }
   }
 
   updateRow(index: number, updatedValue: string | boolean, column: string) {
@@ -112,24 +68,24 @@ export class MainTableComponent {
 
     this.timeoutItem = setTimeout(() => {
       this.updateTableData(false, { index, updatedValue, column });
-      this.setTotals()
+      this.toolbarTotalsComponent.setTotals(this.products());
     }, 200);
 
     this.addRow(index);
   }
 
   addRow(index: number) {
-    const lastIndex = this.products().length - 1
+    const lastIndex = this.products().length - 1;
 
     if (index === lastIndex) {
-      this.updateTableData(true, null)
+      this.updateTableData(true, null);
     }
   }
 
   deleteSelectedProducts() {
-    this.updateTableData(false, null, true)
+    this.updateTableData(false, null, true);
     this.selectedProducts = null;
-    this.setTotals()
+    this.toolbarTotalsComponent.setTotals(this.products());
     this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
 
   }
@@ -143,12 +99,12 @@ export class MainTableComponent {
       } else if (newRow) {
         updatedValues = [...newValue, this.getBlankRow()]
       } else if (data.column === "recurrence" || data.column === "category") {
-        updatedValues = newValue
-        updatedValues[data.index][data.column].code = data.updatedValue
-        updatedValues[data.index][data.column].name = data.updatedValue
+        updatedValues = newValue;
+        updatedValues[data.index][data.column].code = data.updatedValue;
+        updatedValues[data.index][data.column].name = data.updatedValue;
       } else {
-        updatedValues = newValue
-        updatedValues[data.index][data.column] = data.updatedValue
+        updatedValues = newValue;
+        updatedValues[data.index][data.column] = data.updatedValue;
       }
       return updatedValues
     })
@@ -170,51 +126,6 @@ export class MainTableComponent {
     return newRow
   }
 
-  addColumns(colsToAdd: string | null | undefined) {
-    if (colsToAdd) {
-      const newCols = this.formatNewColumns(colsToAdd);
-      this.expenseTableRowsService.updateColumns(newCols);
-    }
-  }
-
-  deleteColumns(colsToDelete: string | null | undefined) {
-    if (colsToDelete) {
-      const columnsArray = colsToDelete.split(",");
-      const lockedRows = ["fixed", "paid", "recurrence", "category", "value"]
-      const allColumns = this.expenseTableRowsService.showColsSignal();
-      const newArray = this.deleteArrayValues(allColumns, columnsArray, lockedRows, "field");
-
-      this.expenseTableRowsService.setColumns(newArray)
-    }
-  }
-
-  manageCategory(add = false) {
-    if (add) {
-      const newValues = []
-      const newCategories = (this.fb.get("categoriesToAdd")?.value as string).split(",");
-      const currentCategories = this.categoryService.showCategorySignal();
-      const validValues = this.validadeArrayUniqueValues(newCategories, currentCategories, "code")
-
-      if (validValues.length > 0) {
-        for (let index = 0; index < validValues.length; index++) {
-          let code = validValues[index].toLowerCase();
-          let name = this.capitalizeFirstLetter(code);
-          newValues.push({ name, code });
-        }
-      }
-      this.categoryService.updateCategories(newValues)
-    } else {
-      const categoriesArray = (this.fb.get("categoriesToAdd")?.value as string).split(",");
-      const lockedRows = this.categoryService.getDefaultCategories();
-      const allCategories = this.categoryService.showCategorySignal();
-      const newArray = this.deleteArrayValues(allCategories, categoriesArray, lockedRows, "code");
-
-      this.categoryService.setCategories(newArray)
-    }
-    this.visible = false
-    this.fb.get("categoriesToAdd")?.setValue("")
-  }
-
   deleteArrayValues(actualColumns: any[], columnsToDelete: string[], exceptions: string[], additionalField: string) {
 
     for (let index = 0; index < actualColumns.length; index++) {
@@ -223,11 +134,11 @@ export class MainTableComponent {
       }
 
       for (let i = 0; i < columnsToDelete.length; i++) {
-        const isEqual = (actualColumns[index][additionalField] as string).toUpperCase() === columnsToDelete[i].toUpperCase()
+        const isEqual = (actualColumns[index][additionalField] as string).toUpperCase() === columnsToDelete[i].toUpperCase();
 
         if (isEqual) {
           actualColumns.splice(index, 1);
-          index--
+          index--;
         }
       }
     }
@@ -235,32 +146,16 @@ export class MainTableComponent {
     return actualColumns
   }
 
-  formatNewColumns(columnsToFormat: string): Column[] {
-    const allColumns = this.expenseTableRowsService.showColsSignal();
-    const columnsArray = columnsToFormat.split(",");
-    const cols = this.validadeArrayUniqueValues(columnsArray, allColumns, "field");
-    const formattedCols = [];
-
-    if (cols.length > 0) {
-      for (let index = 0; index < cols.length; index++) {
-        let field = cols[index].toLowerCase();
-        let header = this.capitalizeFirstLetter(field);
-        formattedCols.push({ field, header, orderActive: false });
-      }
-    }
-    return formattedCols;
-  }
-
   validadeArrayUniqueValues(newValuesArray: string[], actualArray: any[], additionalField: string) {
     const validValues = [];
 
     for (let index = 0; index < newValuesArray.length; index++) {
-      const valueExists = actualArray.findIndex(column => column[additionalField].toUpperCase() === newValuesArray[index].toUpperCase())
+      const valueExists = actualArray.findIndex(column => column[additionalField].toUpperCase() === newValuesArray[index].toUpperCase());
 
       if (valueExists != -1) {
         continue
       }
-      validValues.push(newValuesArray[index])
+      validValues.push(newValuesArray[index]);
     }
     return validValues
   }
@@ -270,10 +165,6 @@ export class MainTableComponent {
   }
 
   clear(table: Table) {
-    table.clear()
-  }
-
-  openModal(type: string) {
-    if (type === "columnsOptions") this.showModalNewRowService.canShow(true)
+    table.clear();
   }
 }

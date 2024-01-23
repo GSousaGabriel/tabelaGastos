@@ -16,22 +16,22 @@ export class ExpenseCategoriesService {
   }
 
   updateCategories(newCategories: Category[]) {
-    this.categorySignal.update(newValue => [...newValue, ...newCategories])
+    this.categorySignal.update(newValue => [...newValue, ...newCategories]);
   }
 
   setupDefaultCategories(){
-    const defaultCategoriesSignal = []
-    const defaultCategories = this.getDefaultCategories()
+    const defaultCategoriesSignal = [];
+    const defaultCategories = this.getDefaultCategories();
 
     for (let index = 0; index < defaultCategories.length; index++) {
-      const name = defaultCategories[index][0].toUpperCase() + defaultCategories[index].slice(1)
+      const name = defaultCategories[index][0].toUpperCase() + defaultCategories[index].slice(1);
       
-      defaultCategoriesSignal.push({ name, code: defaultCategories[index] })
+      defaultCategoriesSignal.push({ name, code: defaultCategories[index] });
     }
     return defaultCategoriesSignal
   }
 
   getDefaultCategories(){
-    return  [ "clothing", "education", "electronics", "health", "recreation", "restaurant", "services", "supermarket", "trasport", "travel"]
+    return  [ "clothing", "education", "electronics", "health", "recreation", "restaurant", "services", "supermarket", "trasport", "travel"];
   }
 }

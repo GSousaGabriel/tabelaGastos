@@ -1,0 +1,13 @@
+<p-toolbar styleClass="mt-2 mb-2">
+    <ng-template pTemplate="left">
+        <div>
+            <label class="mr-3">Total: {{totals().total | reais}}</label>
+            <label class="mr-3">Total paid: {{totals().paid | reais}}</label>
+            <label class="mr-3">Total fixed: {{totals().fixed | reais}}</label>
+        </div>
+    </ng-template>
+    <ng-template pTemplate="right">
+        <p-button label="Total by category" severity="help" icon="pi pi-cog"
+            (onClick)="openModal('totalCategory')"></p-button>
+    </ng-template>
+</p-toolbar>
