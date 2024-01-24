@@ -3,7 +3,7 @@ import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { InputTextModule } from 'primeng/inputtext';
 import { ShowModalNewRowService } from '../../../services/show-modal-new-row.service';
-import { ExpenseTableRowsService } from '../../../services/expense-table-rows.service';
+import { ExpenseTableColumnsService } from '../../../services/expense-table-columns.service';
 import { Column } from '../../../interfaces/column';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 
@@ -25,7 +25,7 @@ export class ToolbarColumnComponent {
   constructor(
     private formBuilder: FormBuilder,
     private showModalNewRowService: ShowModalNewRowService,
-    private expenseTableRowsService: ExpenseTableRowsService
+    private expenseTableColumnsService: ExpenseTableColumnsService
   ) { }
 
   addColumns() {
@@ -33,7 +33,7 @@ export class ToolbarColumnComponent {
 
     if (newColumns) {
       const newCols = this.formatNewColumns(newColumns);
-      this.expenseTableRowsService.updateColumns(newCols);
+      this.expenseTableColumnsService.updateColumns(newCols);
     }
   }
 
@@ -42,16 +42,16 @@ export class ToolbarColumnComponent {
 
     if (newColumns) {
       const columnsArray = newColumns.split(",");
-      const lockedRows = ["fixed", "paid", "recurrence", "category", "value"]
-      const allColumns = this.expenseTableRowsService.showColsSignal();
-      const newArray = this.deleteArrayValues(allColumns, columnsArray, lockedRows, "field");
+      const lockedColumns = this.expenseTableColumnsService.getDefaultColumns().map(column=>column.field);
+      const allColumns = this.expenseTableColumnsService.showColumnsSignal();
+      const newArray = this.deleteArrayValues(allColumns, columnsArray, lockedColumns, "field");
 
-      this.expenseTableRowsService.setColumns(newArray)
+      this.expenseTableColumnsService.setColumns(newArray)
     }
   }
 
   formatNewColumns(columnsToFormat: string): Column[] {
-    const allColumns = this.expenseTableRowsService.showColsSignal();
+    const allColumns = this.expenseTableColumnsService.showColumnsSignal();
     const columnsArray = columnsToFormat.split(",");
     const cols = this.validateArray(columnsArray, allColumns, "field");
     const formattedCols = [];
@@ -67,6 +67,6 @@ export class ToolbarColumnComponent {
   }
 
   openModal(type: string) {
-    if (type === "columnsOptions") this.showModalNewRowService.canShow(true)
+    if (type === "columnsOptions") this.showModalNewRowService.canShow(true);
   }
 }

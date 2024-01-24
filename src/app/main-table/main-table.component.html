@@ -9,7 +9,7 @@
                 <app-toolbar-totals></app-toolbar-totals>
             </div>
             <div class="pd-4 w-full">
-                <p-table [columns]="expenseTableRowsService.showColsSignal()" [value]="products()" dataKey="id"
+                <p-table [columns]="expenseTableColumnsService.showColumnsSignal()" [value]="products()" dataKey="id"
                     styleClass="p-datatable-striped" #dataTable [(selection)]="selectedProducts">
                     <ng-template pTemplate="caption">
                         <div class="flex">
@@ -53,7 +53,14 @@
                                 <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
                             </td>
                             @for (col of columns; track $index) {
-                            @if (col.field === "fixed") {
+                            @if (col.field === "type") {
+                            <td class="align-items-center">
+                                <p-dropdown [name]="col.field" [options]="types" optionLabel="name" optionValue="code"
+                                    (onChange)="updateRow(index, $event.value, col.field)"
+                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
+                            </td>
+                            }
+                            @else if (col.field === "fixed") {
                             <td>
                                 <p-inputSwitch inputId="isFixed" name="isFixed"
                                     (onChange)="updateRow(index, $event.checked, col.field)"
@@ -72,17 +79,19 @@
                             @else if (col.field === "recurrence") {
                             <td>
                                 <p-dropdown name="recurrence" [options]="periodOptions" optionLabel="name"
-                                    (onChange)="updateRow(index, $event.value.code, col.field)"
+                                    optionValue="code" (onChange)="updateRow(index, $event.value, col.field)"
                                     [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
                             </td>
                             }
                             @else if (col.field === "category") {
                             <td class="align-items-center">
-                                <p-dropdown name="category" [options]="categoryManagementComponent.getCategories()"
-                                    optionLabel="name" (onChange)="updateRow(index, $event.value.code, col.field)"
+                                <p-dropdown [name]="col.field"
+                                    [options]="categories[rowData.type]"
+                                    optionLabel="name" optionValue="code"
+                                    (onChange)="updateRow(index, $event.value, col.field)"
                                     [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
                                 <i class="pi pi-plus ml-2 cursor-pointer"
-                                    (click)="categoryManagementComponent.visible= true"></i>
+                                    (click)="categoryManagementComponent.visible= true; categoryManagementComponent.type = rowData.type"></i>
                             </td>
                             }
                             @else {

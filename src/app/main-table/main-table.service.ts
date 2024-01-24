@@ -16,12 +16,13 @@ export class MainTableService {
         description: 'Product Description',
         image: 'bamboo-watch.jpg',
         value: 65,
-        category: 'Accessories',
+        category: "electronics",
         quantity: 24,
         inventoryStatus: 'INSTOCK',
-        recurrence: {name: "5", code: '5'},
+        recurrence: 5,
         paid: true,
-        fixed: false
+        fixed: false,
+        type: "expense"
       },
       {
         id: '1001',
@@ -30,12 +31,13 @@ export class MainTableService {
         description: 'Product Description',
         image: 'black-watch.jpg',
         value: 72,
-        category: 'Accessories',
+        category: "education",
         quantity: 61,
         inventoryStatus: 'OUTOFSTOCK',
-        recurrence: {name: "1", code: '1'},
+        recurrence: 1,
         paid: false,
-        fixed: true
+        fixed: true,
+        type: "expense"
       },
       {
         id: '1002',
@@ -44,12 +46,13 @@ export class MainTableService {
         description: 'Product Description',
         image: 'blue-band.jpg',
         value: 79,
-        category: 'Fitness',
+        category: "education",
         quantity: 2,
         inventoryStatus: 'LOWSTOCK',
-        recurrence: {name: "2", code: '2'},
+        recurrence: 2,
         paid: true,
-        fixed: false
+        fixed: false,
+        type: "expense"
       },
       {
         id: '1003',
@@ -58,12 +61,13 @@ export class MainTableService {
         description: 'Product Description',
         image: 'blue-t-shirt.jpg',
         value: 29,
-        category: 'Clothing',
+        category: "clothing",
         quantity: 25,
         inventoryStatus: 'INSTOCK',
-        recurrence: {name: "7", code: '7'},
+        recurrence: 7,
         paid: true,
-        fixed: false
+        fixed: false,
+        type: "expense"
       },
       {
         id: '1004',
@@ -72,12 +76,13 @@ export class MainTableService {
         description: 'Product Description',
         image: 'bracelet.jpg',
         value: 15,
-        category: 'Accessories',
+        category: "electronics",
         quantity: 73,
         inventoryStatus: 'INSTOCK',
-        recurrence: {name: "9", code: "9"},
+        recurrence: 9,
         paid: true,
-        fixed: true
+        fixed: true,
+        type: "expense"
       },
       {
         id: '1005',
@@ -86,12 +91,13 @@ export class MainTableService {
         description: 'Product Description',
         image: 'brown-purse.jpg',
         value: 120,
-        category: 'Accessories',
+        category: "electronics",
         quantity: 0,
         inventoryStatus: 'OUTOFSTOCK',
-        recurrence: {name: "15", code: '15'},
+        recurrence: 15,
         paid: true,
-        fixed: true
+        fixed: true,
+        type: "expense"
       },
       {
         id: '1006',
@@ -100,12 +106,13 @@ export class MainTableService {
         description: 'Product Description',
         image: 'chakra-bracelet.jpg',
         value: 32,
-        category: 'Accessories',
+        category: "restaurant",
         quantity: 5,
         inventoryStatus: 'LOWSTOCK',
-        recurrence: {name: "13", code: '13'},
+        recurrence: 13,
         paid: true,
-        fixed: false
+        fixed: false,
+        type: "expense"
       },
       {
         id: '1007',
@@ -114,12 +121,13 @@ export class MainTableService {
         description: 'Product Description',
         image: 'galaxy-earrings.jpg',
         value: 34,
-        category: 'Accessories',
+        category: "restaurant",
         quantity: 23,
         inventoryStatus: 'INSTOCK',
-        recurrence: {name: "10", code: '10'},
+        recurrence: 10,
         paid: true,
-        fixed: true
+        fixed: true,
+        type: "expense"
       },
       {
         id: '1008',
@@ -133,7 +141,8 @@ export class MainTableService {
         inventoryStatus: 'LOWSTOCK',
         recurrence: 4,
         paid: true,
-        fixed: false
+        fixed: false,
+        type: "expense"
       },
       {
         id: '1009',
@@ -147,7 +156,8 @@ export class MainTableService {
         inventoryStatus: 'INSTOCK',
         recurrence: 3,
         paid: true,
-        fixed: false
+        fixed: false,
+        type: "expense"
       },
       {
         id: '1010',
@@ -159,9 +169,10 @@ export class MainTableService {
         category: 'Accessories',
         quantity: 0,
         inventoryStatus: 'OUTOFSTOCK',
-        recurrence: 4,
+        recurrence: { code: "4", name: "4" },
         paid: true,
-        fixed: false
+        fixed: false,
+        type: "expense"
       },
       {
         id: '1011',

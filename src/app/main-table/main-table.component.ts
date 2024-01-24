@@ -1,4 +1,4 @@
-import { ExpenseTableRowsService } from './../services/expense-table-rows.service';
+import { ExpenseTableColumnsService } from '../services/expense-table-columns.service';
 import { Component, ViewChild, WritableSignal, signal } from '@angular/core';
 import { Table, TableModule } from 'primeng/table';
 import { MainTableService } from './main-table.service';
@@ -10,18 +10,13 @@ import { MessageService } from 'primeng/api';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { DialogModule } from 'primeng/dialog';
-import { Category } from '../interfaces/category';
 import { ShowModalNewRowService } from '../services/show-modal-new-row.service';
 import { ModalColumnEditComponent } from '../features/modal-column-edit/modal-column-edit.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToolbarColumnComponent } from './features/toolbar-column/toolbar-column.component';
 import { ToolbarTotalsComponent } from './features/toolbar-totals/toolbar-totals.component';
 import { CategoryManagementComponent } from './features/category-management/category-management.component';
-
-interface City {
-  name: string;
-  code: string;
-}
+import { DropdownField } from '../interfaces/dropdownField';
 
 @Component({
   selector: 'app-main-table',
@@ -36,15 +31,20 @@ export class MainTableComponent {
   @ViewChild(CategoryManagementComponent) categoryManagementComponent!: CategoryManagementComponent;
 
   products: WritableSignal<any> = signal([]);
-  categoryOptions: WritableSignal<Category[]> = signal([]);
+  categoryOptions: WritableSignal<DropdownField[]> = signal([]);
+  types = [
+    { code: "expense", name: "Expense" },
+    { code: "income", name: "Income" }
+  ]
   timeoutItem!: any;
-  periodOptions: City[] | undefined = [];
+  periodOptions: DropdownField[] = [];
+  categories: any[] = [];
   selectedProducts!: any;
 
   constructor(
     private mainTableService: MainTableService,
     protected showModalNewRowService: ShowModalNewRowService,
-    protected expenseTableRowsService: ExpenseTableRowsService,
+    protected expenseTableColumnsService: ExpenseTableColumnsService,
     private messageService: MessageService
   ) { }
 
@@ -54,10 +54,11 @@ export class MainTableComponent {
       this.updateTableData(true, null);
 
       for (let index = 0; index < 24; index++) {
-        const fixedValue = (index + 1).toString()
-        this.periodOptions?.push({ name: fixedValue, code: fixedValue })
+        const fixedValue = (index + 1);
+        this.periodOptions?.push({ name: fixedValue, code: fixedValue });
       }
       this.toolbarTotalsComponent.setTotals(this.products());
+      this.categories = this.categoryManagementComponent.getCategories() as any[];
     });
   }
 
@@ -98,10 +99,6 @@ export class MainTableComponent {
         updatedValues = newValue.filter((val: any) => !this.selectedProducts?.includes(val));
       } else if (newRow) {
         updatedValues = [...newValue, this.getBlankRow()]
-      } else if (data.column === "recurrence" || data.column === "category") {
-        updatedValues = newValue;
-        updatedValues[data.index][data.column].code = data.updatedValue;
-        updatedValues[data.index][data.column].name = data.updatedValue;
       } else {
         updatedValues = newValue;
         updatedValues[data.index][data.column] = data.updatedValue;
@@ -111,7 +108,7 @@ export class MainTableComponent {
   }
 
   getBlankRow() {
-    const cols = this.expenseTableRowsService.showColsSignal();
+    const cols = this.expenseTableColumnsService.showColumnsSignal();
     const newRow: { [key: string]: string | { name: string, code: string } } = {};
 
     for (let index = 0; index < cols.length; index++) {

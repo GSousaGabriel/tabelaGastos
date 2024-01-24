@@ -4,7 +4,7 @@ import { Component, effect } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { Column } from '../../interfaces/column';
-import { ExpenseTableRowsService } from '../../services/expense-table-rows.service';
+import { ExpenseTableColumnsService } from '../../services/expense-table-columns.service';
 import { InputSwitchModule } from 'primeng/inputswitch';
 
 @Component({
@@ -21,20 +21,20 @@ export class ModalColumnEditComponent {
 
   constructor(
     private showModalNewRowService: ShowModalNewRowService,
-    private expenseTableRowsService: ExpenseTableRowsService
+    private expenseTableColumnsService: ExpenseTableColumnsService
   ) {
     effect(() => {
       this.visible = this.showModalNewRowService.showModalNewRow()
     });
 
-    this.columns = expenseTableRowsService.showColsSignal()
+    this.columns = expenseTableColumnsService.showColumnsSignal()
   }
 
   closeModal() {
     this.showModalNewRowService.canShow(false)
   }
 
-  updateOrderingRows(index: number){
-    this.expenseTableRowsService.updateColumnsOrdering(index)
+  updateOrderingRows(index: number) {
+    this.expenseTableColumnsService.updateColumnsOrdering(index)
   }
 }

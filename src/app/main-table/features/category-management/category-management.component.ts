@@ -18,7 +18,8 @@ export class CategoryManagementComponent {
   fb = this.formBuilder.group({
     categoriesToAdd: ["",]
   })
-  visible = false
+  visible = false;
+  type = '';
 
   constructor(
     private categoryService: ExpenseCategoriesService,
@@ -29,7 +30,7 @@ export class CategoryManagementComponent {
     if (add) {
       const newValues = [];
       const newCategories = (this.fb.get("categoriesToAdd")?.value as string).split(",");
-      const currentCategories = this.getCategories();
+      const currentCategories = this.getCategories(this.type);
       const validValues = this.validateArray(newCategories, currentCategories, "code");
 
       if (validValues.length > 0) {
@@ -39,20 +40,23 @@ export class CategoryManagementComponent {
           newValues.push({ name, code });
         }
       }
-      this.categoryService.updateCategories(newValues);
+      this.categoryService.updateCategories(this.type, newValues);
     } else {
       const categoriesArray = (this.fb.get("categoriesToAdd")?.value as string).split(",");
-      const lockedRows = this.categoryService.getDefaultCategories();
-      const allCategories = this.getCategories();
+      const lockedRows = this.categoryService.getDefaultCategories(this.type);
+      const allCategories = this.getCategories(this.type);
       const newArray = this.deleteArrayValues(allCategories, categoriesArray, lockedRows, "code");
 
-      this.categoryService.setCategories(newArray);
+      this.categoryService.setCategories(this.type, newArray);
     }
     this.visible = false;
     this.fb.get("categoriesToAdd")?.setValue("");
   }
 
-  getCategories(){
-    return this.categoryService.showCategorySignal();
+  getCategories(type: null | string = null) {
+    if (type) {
+      return this.categoryService.showCategorySignal()[type]
+    }
+    return this.categoryService.showCategorySignal()
   }
 }
