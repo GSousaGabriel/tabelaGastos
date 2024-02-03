@@ -6,19 +6,17 @@
                     [deleteArrayValues]="deleteArrayValues"></app-toolbar-column>
             </div>
             <div>
-                <app-toolbar-totals></app-toolbar-totals>
+                <app-toolbar-totals [expenses]="expenses()"></app-toolbar-totals>
             </div>
             <div class="pd-4 w-full">
-                <p-table [columns]="expenseTableColumnsService.showColumnsSignal()" [value]="products()" dataKey="id"
-                    styleClass="p-datatable-striped" #dataTable [(selection)]="selectedProducts">
-                    <ng-template pTemplate="caption">
+                <p-table [columns]="expenseTableColumnsService.showColumnsSignal()" [value]="expenses()" dataKey="id"
+                    styleClass="p-datatable-striped" #dataTable [(selection)]="selectedExpenses">
+                    <ng-template pTemplate="caption" class="w-auto">
                         <div class="flex">
                             <p-button label="Delete Selected Items" icon="pi pi-trash" class="p-button-danger ml-3"
-                                (click)="deleteSelectedProducts()"
-                                [disabled]="!selectedProducts || !selectedProducts.length"></p-button>
+                                (click)="deleteSelectedExpenses()"
+                                [disabled]="!selectedExpenses || !selectedExpenses.length"></p-button>
                             <div class="ml-auto">
-                                <p-button label="Reset filters" class="p-button-outlined" icon="pi pi-filter-slash"
-                                    (click)="clear(dataTable)"></p-button>
                                 <span class="p-input-icon-left ml-3">
                                     <i class="pi pi-search"></i>
                                     <input pInputText type="text"
@@ -35,7 +33,7 @@
                             </th>
                             @for (col of columns; track $index) {
                             @if (col.orderActive) {
-                            <th pSortableColumn="quantity"> {{ col.header }} <p-sortIcon field="quantity"
+                            <th [pSortableColumn]="col.field"> {{ col.header }} <p-sortIcon [field]="col.field"
                                     pSortableColumnDisabled="false"></p-sortIcon></th>
                             }
                             @else {
@@ -56,14 +54,14 @@
                             @if (col.field === "type") {
                             <td class="align-items-center">
                                 <p-dropdown [name]="col.field" [options]="types" optionLabel="name" optionValue="code"
-                                    (onChange)="updateRow(index, $event.value, col.field)"
+                                    (onChange)="updateRow(rowData['id'], $event.value, col.field)"
                                     [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
                             </td>
                             }
                             @else if (col.field === "fixed") {
                             <td>
                                 <p-inputSwitch inputId="isFixed" name="isFixed"
-                                    (onChange)="updateRow(index, $event.checked, col.field)"
+                                    (onChange)="updateRow(rowData['id'], $event.checked, col.field)"
                                     [ngModel]="rowData[col.field]"
                                     [ngModelOptions]="{standalone: true}"></p-inputSwitch>
                             </td>
@@ -71,7 +69,7 @@
                             @else if (col.field === "paid") {
                             <td>
                                 <p-inputSwitch inputId="isPaid" name="isPaid"
-                                    (onChange)="updateRow(index, $event.checked, col.field)"
+                                    (onChange)="updateRow(rowData['id'], $event.checked, col.field)"
                                     [ngModel]="rowData[col.field]"
                                     [ngModelOptions]="{standalone: true}"></p-inputSwitch>
                             </td>
@@ -79,19 +77,24 @@
                             @else if (col.field === "recurrence") {
                             <td>
                                 <p-dropdown name="recurrence" [options]="periodOptions" optionLabel="name"
-                                    optionValue="code" (onChange)="updateRow(index, $event.value, col.field)"
+                                    optionValue="code" (onChange)="updateRow(rowData['id'], $event.value, col.field)"
                                     [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
                             </td>
                             }
                             @else if (col.field === "category") {
                             <td class="align-items-center">
-                                <p-dropdown [name]="col.field"
-                                    [options]="categories[rowData.type]"
-                                    optionLabel="name" optionValue="code"
-                                    (onChange)="updateRow(index, $event.value, col.field)"
+                                <p-dropdown [name]="col.field" [options]="categories[rowData.type]" optionLabel="name"
+                                    optionValue="code" (onChange)="updateRow(rowData['id'], $event.value, col.field)"
                                     [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
                                 <i class="pi pi-plus ml-2 cursor-pointer"
                                     (click)="categoryManagementComponent.visible= true; categoryManagementComponent.type = rowData.type"></i>
+                            </td>
+                            }
+                            @else if (col.field === "date") {
+                            <td class="align-items-center">
+                                <p-calendar [name]="col.field" [ngModel]="rowData[col.field]" [showIcon]="true"
+                                    dateFormat="dd/mm/yy" (onSelect)="updateRow(rowData['id'], $event, col.field)"
+                                    [baseZIndex]="999" [ngModelOptions]="{standalone: true}"></p-calendar>
                             </td>
                             }
                             @else {
@@ -101,7 +104,7 @@
                                     <ng-template pTemplate="input">
                                         <p-inputNumber inputId="value" mode="currency" currency="BRL" locale="pt-BR"
                                             [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
-                                            (onInput)="updateRow(index, $event.value, col.field)">
+                                            (onInput)="updateRow(rowData['id'], $event.value, col.field)">
                                         </p-inputNumber>
                                     </ng-template>
                                     <ng-template pTemplate="output">
@@ -110,7 +113,7 @@
                                     }@else {
                                     <ng-template pTemplate="input">
                                         <input #cellValue pInputText type="text" value="{{rowData[col.field]}}"
-                                            (keyup)="updateRow(index, cellValue.value, col.field)" />
+                                            (keyup)="updateRow(rowData['id'], cellValue.value, col.field)" />
                                     </ng-template>
                                     <ng-template pTemplate="output">
                                         {{ rowData[col.field]}}

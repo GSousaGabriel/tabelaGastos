@@ -20,7 +20,7 @@ export class ToolbarColumnComponent {
   @Input() validateArray!: Function;
   fb = this.formBuilder.group({
     newColumns: ["",]
-  })
+  });
 
   constructor(
     private formBuilder: FormBuilder,

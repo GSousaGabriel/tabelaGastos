@@ -45,6 +45,7 @@ export class ExpenseTableColumnsService {
       { field: 'paid', header: 'Paid', orderActive: false },
       { field: 'recurrence', header: 'Recurrence', orderActive: false },
       { field: 'category', header: 'Category', orderActive: false },
+      { field: 'date', header: 'Date', orderActive: false },
       { field: 'value', header: 'Value', orderActive: false }
     ]
   }

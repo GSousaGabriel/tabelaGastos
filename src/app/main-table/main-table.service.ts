@@ -10,7 +10,7 @@ export class MainTableService {
   getProductsData() {
     return [
       {
-        id: '1000',
+        id: 1,
         code: 'f230fh0g3',
         name: 'Bamboo Watch',
         description: 'Product Description',
@@ -25,7 +25,7 @@ export class MainTableService {
         type: "expense"
       },
       {
-        id: '1001',
+        id: 2,
         code: 'nvklal433',
         name: 'Black Watch',
         description: 'Product Description',
@@ -40,7 +40,7 @@ export class MainTableService {
         type: "expense"
       },
       {
-        id: '1002',
+        id: 3,
         code: 'zz21cz3c1',
         name: 'Blue Band',
         description: 'Product Description',
@@ -55,7 +55,7 @@ export class MainTableService {
         type: "expense"
       },
       {
-        id: '1003',
+        id: 4,
         code: '244wgerg2',
         name: 'Blue T-Shirt',
         description: 'Product Description',
@@ -70,7 +70,7 @@ export class MainTableService {
         type: "expense"
       },
       {
-        id: '1004',
+        id: 5,
         code: 'h456wer53',
         name: 'Bracelet',
         description: 'Product Description',
@@ -85,7 +85,7 @@ export class MainTableService {
         type: "expense"
       },
       {
-        id: '1005',
+        id: 6,
         code: 'av2231fwg',
         name: 'Brown Purse',
         description: 'Product Description',
@@ -100,7 +100,7 @@ export class MainTableService {
         type: "expense"
       },
       {
-        id: '1006',
+        id: 7,
         code: 'bib36pfvm',
         name: 'Chakra Bracelet',
         description: 'Product Description',
@@ -115,7 +115,7 @@ export class MainTableService {
         type: "expense"
       },
       {
-        id: '1007',
+        id: 8,
         code: 'mbvjkgip5',
         name: 'Galaxy Earrings',
         description: 'Product Description',
@@ -130,7 +130,7 @@ export class MainTableService {
         type: "expense"
       },
       {
-        id: '1008',
+        id: 9,
         code: 'vbb124btr',
         name: 'Game Controller',
         description: 'Product Description',
@@ -145,7 +145,7 @@ export class MainTableService {
         type: "expense"
       },
       {
-        id: '1009',
+        id: 10,
         code: 'cm230f032',
         name: 'Gaming Set',
         description: 'Product Description',
@@ -160,7 +160,7 @@ export class MainTableService {
         type: "expense"
       },
       {
-        id: '1010',
+        id: 11,
         code: 'plb34234v',
         name: 'Gold Phone Case',
         description: 'Product Description',

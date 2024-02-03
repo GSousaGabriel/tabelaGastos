@@ -9,6 +9,7 @@ import { DropdownModule } from 'primeng/dropdown';
 import { MessageService } from 'primeng/api';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { InputSwitchModule } from 'primeng/inputswitch';
+import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
 import { ShowModalNewRowService } from '../services/show-modal-new-row.service';
 import { ModalColumnEditComponent } from '../features/modal-column-edit/modal-column-edit.component';
@@ -21,7 +22,7 @@ import { DropdownField } from '../interfaces/dropdownField';
 @Component({
   selector: 'app-main-table',
   standalone: true,
-  imports: [ModalColumnEditComponent, ToolbarColumnComponent, ToolbarTotalsComponent, CategoryManagementComponent, FormsModule, ReactiveFormsModule, TableModule, DialogModule, ButtonModule, InputTextModule, CheckboxModule, DropdownModule, InputSwitchModule, InputNumberModule],
+  imports: [ModalColumnEditComponent, ToolbarColumnComponent, ToolbarTotalsComponent, CategoryManagementComponent, FormsModule, ReactiveFormsModule, TableModule, DialogModule, ButtonModule, InputTextModule, CheckboxModule, DropdownModule, InputSwitchModule, InputNumberModule, CalendarModule],
   templateUrl: './main-table.component.html',
   styleUrl: './main-table.component.scss',
   providers: [MessageService]
@@ -30,7 +31,7 @@ export class MainTableComponent {
   @ViewChild(ToolbarTotalsComponent) toolbarTotalsComponent!: ToolbarTotalsComponent;
   @ViewChild(CategoryManagementComponent) categoryManagementComponent!: CategoryManagementComponent;
 
-  products: WritableSignal<any> = signal([]);
+  expenses: WritableSignal<any> = signal([]);
   categoryOptions: WritableSignal<DropdownField[]> = signal([]);
   types = [
     { code: "expense", name: "Expense" },
@@ -39,7 +40,7 @@ export class MainTableComponent {
   timeoutItem!: any;
   periodOptions: DropdownField[] = [];
   categories: any[] = [];
-  selectedProducts!: any;
+  selectedExpenses!: any;
 
   constructor(
     private mainTableService: MainTableService,
@@ -50,61 +51,68 @@ export class MainTableComponent {
 
   ngOnInit() {
     this.mainTableService.getProductsMini().then((data: any) => {
-      this.products.set(data);
+      this.expenses.set(data);
       this.updateTableData(true, null);
 
       for (let index = 0; index < 24; index++) {
         const fixedValue = (index + 1);
         this.periodOptions?.push({ name: fixedValue, code: fixedValue });
       }
-      this.toolbarTotalsComponent.setTotals(this.products());
+      this.toolbarTotalsComponent.setTotals();
       this.categories = this.categoryManagementComponent.getCategories() as any[];
     });
   }
 
-  updateRow(index: number, updatedValue: string | boolean, column: string) {
+  updateRow(id: number, updatedValue: string | boolean | Date, column: string) {
     if (this.timeoutItem) {
       clearTimeout(this.timeoutItem);
     }
 
     this.timeoutItem = setTimeout(() => {
-      this.updateTableData(false, { index, updatedValue, column });
-      this.toolbarTotalsComponent.setTotals(this.products());
+      this.updateTableData(false, { id, updatedValue, column });
+      this.toolbarTotalsComponent.setTotals();
     }, 200);
 
-    this.addRow(index);
+    this.addRow(id);
   }
 
-  addRow(index: number) {
-    const lastIndex = this.products().length - 1;
+  addRow(id: number) {
+    const currentIndex = this.getExpenseIndex(id);
+    const lastIndex = this.expenses().length - 1;
 
-    if (index === lastIndex) {
+    if (currentIndex === lastIndex) {
       this.updateTableData(true, null);
     }
   }
 
-  deleteSelectedProducts() {
+  deleteSelectedExpenses() {
     this.updateTableData(false, null, true);
-    this.selectedProducts = null;
-    this.toolbarTotalsComponent.setTotals(this.products());
+    this.selectedExpenses = null;
+    this.toolbarTotalsComponent.setTotals();
     this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
 
   }
 
   updateTableData(newRow: boolean, data: any, deleteRow = false) {
-    this.products.update(newValue => {
+    this.expenses.update(newValue => {
       let updatedValues: any[] = [];
 
       if (deleteRow) {
-        updatedValues = newValue.filter((val: any) => !this.selectedProducts?.includes(val));
+        updatedValues = newValue.filter((val: any) => !this.selectedExpenses?.includes(val));
       } else if (newRow) {
         updatedValues = [...newValue, this.getBlankRow()]
       } else {
         updatedValues = newValue;
-        updatedValues[data.index][data.column] = data.updatedValue;
+        const index = this.getExpenseIndex(data.id);
+        updatedValues[index][data.column] = data.updatedValue;
       }
       return updatedValues
     })
+  }
+
+  getExpenseIndex(id: number) {
+    const allExpenses = this.expenses();
+    return allExpenses.findIndex((expense: any) => expense.id === id);
   }
 
   getBlankRow() {
@@ -114,10 +122,6 @@ export class MainTableComponent {
     for (let index = 0; index < cols.length; index++) {
       const field = cols[index].field;
       newRow[field] = "";
-
-      if (field === "recurrence") {
-        newRow[field] = { name: "1", code: '1' };
-      }
     }
 
     return newRow

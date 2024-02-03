@@ -7,7 +7,14 @@
         </div>
     </ng-template>
     <ng-template pTemplate="right">
-        <p-button label="Total by category" severity="help" icon="pi pi-cog"
-            (onClick)="openModal('totalCategory')"></p-button>
+        <label class="mr-3">Total by {{fb.get('categorySelected')?.value}}: {{totals().category | reais}}</label>
+        <form [formGroup]="fb">
+            <span class="p-float-label">
+                <p-dropdown [options]="categories" formControlName="categorySelected" placeholder="Select a Category"
+                    (onChange)="setTotals()" optionLabel="name" optionValue="code"
+                    inputId="categorySelected"></p-dropdown>
+                <label for="categorySelected">Select a Category</label>
+            </span>
+        </form>
     </ng-template>
 </p-toolbar>
