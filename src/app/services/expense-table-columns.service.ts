@@ -11,11 +11,11 @@ export class ExpenseTableColumnsService {
   constructor() {
   }
 
-  setColumns(newValue: Column[]) {
+  setColumns(type: string, newValue: Column[]) {
     this.columnsSignal.set(newValue);
   }
 
-  updateColumns(newColumns: Column[]) {
+  updateColumns(type: string, newColumns: Column[]) {
     this.columnsSignal.update(newValue => [...newValue, ...newColumns])
   }
 
@@ -32,21 +32,25 @@ export class ExpenseTableColumnsService {
 
     for (let index = 0; index < defaultColumns.length; index++) {
       const header = defaultColumns[index].field[0].toUpperCase() + defaultColumns[index].field.slice(1);
+      const field = defaultColumns[index].field;
+      const orderActive = defaultColumns[index].orderActive;
+      const defaultValue = defaultColumns[index].defaultValue;
 
-      defaultColumnsSignal.push({ field: defaultColumns[index].field, header, orderActive: false });
+      defaultColumnsSignal.push({ field, header, orderActive, defaultValue });
     }
     return defaultColumnsSignal;
   }
 
   getDefaultColumns() {
     return [
-      { field: 'type', header: 'Type', orderActive: false },
-      { field: 'fixed', header: 'Fixed', orderActive: false },
-      { field: 'paid', header: 'Paid', orderActive: false },
-      { field: 'recurrence', header: 'Recurrence', orderActive: false },
-      { field: 'category', header: 'Category', orderActive: false },
-      { field: 'date', header: 'Date', orderActive: false },
-      { field: 'value', header: 'Value', orderActive: false }
+      { field: 'id', orderActive: false, defaultValue: 0 },
+      { field: 'type', orderActive: false, defaultValue: "expense" },
+      { field: 'fixed', orderActive: false, defaultValue: "" },
+      { field: 'paid', orderActive: false, defaultValue: "" },
+      { field: 'recurrence', orderActive: false, defaultValue: "" },
+      { field: 'category', orderActive: false, defaultValue: "" },
+      { field: 'date', orderActive: false, defaultValue: "" },
+      { field: 'value', orderActive: false, defaultValue: "" }
     ]
   }
 }

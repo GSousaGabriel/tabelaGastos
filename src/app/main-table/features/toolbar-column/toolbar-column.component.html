@@ -12,10 +12,13 @@
                 (onClick)="addColumns()"></p-button>
             <p-button label="Remove columns" icon="pi pi-trash" severity="danger" class="ml-3"
                 (onClick)="deleteColumns()"></p-button>
+            <p-button label="Manage Columns" icon="pi pi-trash" severity="danger" class="ml-3"
+                (click)="categoryManagementComponent.visible= true; categoryManagementComponent.setDataManager('columns');"></p-button>
         </ng-template>
         <ng-template pTemplate="right">
             <p-button label="configure Columns" severity="help" icon="pi pi-cog"
                 (onClick)="openModal('columnsOptions')"></p-button>
         </ng-template>
     </p-toolbar>
+    <app-category-management></app-category-management>
 </form>

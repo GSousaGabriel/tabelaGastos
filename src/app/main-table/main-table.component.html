@@ -2,15 +2,15 @@
     <div class="absolute h-full w-full">
         <div class="absolute top-0 left-0 px-4 py-3 w-full h-11rem font-bold">
             <div class="w-full">
-                <app-toolbar-column [capitalize]="capitalizeFirstLetter" [validateArray]="validadeArrayUniqueValues"
-                    [deleteArrayValues]="deleteArrayValues"></app-toolbar-column>
+                <app-toolbar-column></app-toolbar-column>
             </div>
             <div>
                 <app-toolbar-totals [expenses]="expenses()"></app-toolbar-totals>
             </div>
             <div class="pd-4 w-full">
                 <p-table [columns]="expenseTableColumnsService.showColumnsSignal()" [value]="expenses()" dataKey="id"
-                    styleClass="p-datatable-striped" #dataTable [(selection)]="selectedExpenses">
+                    styleClass="p-datatable-striped" #dataTable [(selection)]="selectedExpenses"
+                    styleClass="p-datatable-sm">
                     <ng-template pTemplate="caption" class="w-auto">
                         <div class="flex">
                             <p-button label="Delete Selected Items" icon="pi pi-trash" class="p-button-danger ml-3"
@@ -36,7 +36,7 @@
                             <th [pSortableColumn]="col.field"> {{ col.header }} <p-sortIcon [field]="col.field"
                                     pSortableColumnDisabled="false"></p-sortIcon></th>
                             }
-                            @else {
+                            @else if (col.field != "id") {
                             <th>
                                 {{ col.header }}
                             </th>
@@ -54,57 +54,60 @@
                             @if (col.field === "type") {
                             <td class="align-items-center">
                                 <p-dropdown [name]="col.field" [options]="types" optionLabel="name" optionValue="code"
-                                    (onChange)="updateRow(rowData['id'], $event.value, col.field)"
-                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
+                                    (onChange)="updateRow(index, $event.value, col.field)"
+                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
+                                    appendTo="body"></p-dropdown>
                             </td>
                             }
                             @else if (col.field === "fixed") {
                             <td>
                                 <p-inputSwitch inputId="isFixed" name="isFixed"
-                                    (onChange)="updateRow(rowData['id'], $event.checked, col.field)"
-                                    [ngModel]="rowData[col.field]"
-                                    [ngModelOptions]="{standalone: true}"></p-inputSwitch>
+                                    (onChange)="updateRow(index, $event.checked, col.field)"
+                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
+                                    trueValue="fixed" falseValue="notFixed"></p-inputSwitch>
                             </td>
                             }
                             @else if (col.field === "paid") {
                             <td>
                                 <p-inputSwitch inputId="isPaid" name="isPaid"
-                                    (onChange)="updateRow(rowData['id'], $event.checked, col.field)"
-                                    [ngModel]="rowData[col.field]"
-                                    [ngModelOptions]="{standalone: true}"></p-inputSwitch>
+                                    (onChange)="updateRow(index, $event.checked, col.field)"
+                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
+                                    trueValue="paid" falseValue="notPaid"></p-inputSwitch>
                             </td>
                             }
                             @else if (col.field === "recurrence") {
                             <td>
                                 <p-dropdown name="recurrence" [options]="periodOptions" optionLabel="name"
-                                    optionValue="code" (onChange)="updateRow(rowData['id'], $event.value, col.field)"
+                                    optionValue="code" (onChange)="updateRow(index, $event.value, col.field)"
                                     [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
                             </td>
                             }
                             @else if (col.field === "category") {
                             <td class="align-items-center">
                                 <p-dropdown [name]="col.field" [options]="categories[rowData.type]" optionLabel="name"
-                                    optionValue="code" (onChange)="updateRow(rowData['id'], $event.value, col.field)"
-                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
+                                    optionValue="code" (onChange)="updateRow(index, $event.value, col.field)"
+                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
+                                    appendTo="body"></p-dropdown>
                                 <i class="pi pi-plus ml-2 cursor-pointer"
-                                    (click)="categoryManagementComponent.visible= true; categoryManagementComponent.type = rowData.type"></i>
+                                    (click)="categoryManagementComponent.visible= true; categoryManagementComponent.setDataManager(rowData.type)"></i>
                             </td>
                             }
                             @else if (col.field === "date") {
                             <td class="align-items-center">
                                 <p-calendar [name]="col.field" [ngModel]="rowData[col.field]" [showIcon]="true"
-                                    dateFormat="dd/mm/yy" (onSelect)="updateRow(rowData['id'], $event, col.field)"
-                                    [baseZIndex]="999" [ngModelOptions]="{standalone: true}"></p-calendar>
+                                    dateFormat="dd/mm/yy" (onSelect)="updateRow(index, $event, col.field)"
+                                    [baseZIndex]="999" [ngModelOptions]="{standalone: true}"
+                                    appendTo="body"></p-calendar>
                             </td>
                             }
-                            @else {
+                            @else if (col.field != "id") {
                             <td [pEditableColumn]="rowData[col.field]" pEditableColumnField="{{col.field}}">
                                 <p-cellEditor>
                                     @if (col.field === "value") {
                                     <ng-template pTemplate="input">
                                         <p-inputNumber inputId="value" mode="currency" currency="BRL" locale="pt-BR"
                                             [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
-                                            (onInput)="updateRow(rowData['id'], $event.value, col.field)">
+                                            (onInput)="updateRow(index, $event.value, col.field)">
                                         </p-inputNumber>
                                     </ng-template>
                                     <ng-template pTemplate="output">
@@ -113,7 +116,7 @@
                                     }@else {
                                     <ng-template pTemplate="input">
                                         <input #cellValue pInputText type="text" value="{{rowData[col.field]}}"
-                                            (keyup)="updateRow(rowData['id'], cellValue.value, col.field)" />
+                                            (keyup)="updateRow(index, cellValue.value, col.field)" />
                                     </ng-template>
                                     <ng-template pTemplate="output">
                                         {{ rowData[col.field]}}
@@ -138,5 +141,4 @@
         }
     </div>
 </div>
-<app-category-management [capitalize]="capitalizeFirstLetter" [validateArray]="validadeArrayUniqueValues"
-    [deleteArrayValues]="deleteArrayValues"></app-category-management>
+<app-category-management></app-category-management>

@@ -24,17 +24,19 @@ export class ModalColumnEditComponent {
     private expenseTableColumnsService: ExpenseTableColumnsService
   ) {
     effect(() => {
-      this.visible = this.showModalNewRowService.showModalNewRow()
+      this.visible = this.showModalNewRowService.showModalNewRow();
     });
 
-    this.columns = expenseTableColumnsService.showColumnsSignal()
+    const allColumns = expenseTableColumnsService.showColumnsSignal();
+    allColumns.shift();
+    this.columns = allColumns;
   }
 
   closeModal() {
-    this.showModalNewRowService.canShow(false)
+    this.showModalNewRowService.canShow(false);
   }
 
   updateOrderingRows(index: number) {
-    this.expenseTableColumnsService.updateColumnsOrdering(index)
+    this.expenseTableColumnsService.updateColumnsOrdering(index);
   }
 }

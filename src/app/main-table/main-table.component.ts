@@ -18,6 +18,7 @@ import { ToolbarColumnComponent } from './features/toolbar-column/toolbar-column
 import { ToolbarTotalsComponent } from './features/toolbar-totals/toolbar-totals.component';
 import { CategoryManagementComponent } from './features/category-management/category-management.component';
 import { DropdownField } from '../interfaces/dropdownField';
+import { ExpenseCategoriesService } from '../services/expense-categories.service';
 
 @Component({
   selector: 'app-main-table',
@@ -39,50 +40,59 @@ export class MainTableComponent {
   ]
   timeoutItem!: any;
   periodOptions: DropdownField[] = [];
-  categories: any[] = [];
+  categories = this.categoryService.showCategorySignal();
   selectedExpenses!: any;
 
   constructor(
     private mainTableService: MainTableService,
     protected showModalNewRowService: ShowModalNewRowService,
     protected expenseTableColumnsService: ExpenseTableColumnsService,
+    private categoryService: ExpenseCategoriesService,
     private messageService: MessageService
   ) { }
 
   ngOnInit() {
     this.mainTableService.getProductsMini().then((data: any) => {
       this.expenses.set(data);
-      this.updateTableData(true, null);
+      this.addRow(-1);
 
       for (let index = 0; index < 24; index++) {
         const fixedValue = (index + 1);
         this.periodOptions?.push({ name: fixedValue, code: fixedValue });
       }
-      this.toolbarTotalsComponent.setTotals();
-      this.categories = this.categoryManagementComponent.getCategories() as any[];
     });
   }
 
-  updateRow(id: number, updatedValue: string | boolean | Date, column: string) {
+  updateRow(index: number, updatedValue: any, column: string) {
+    const newRow = this.addRow(index);
+
+    if (newRow) {
+      return
+    }
+
     if (this.timeoutItem) {
       clearTimeout(this.timeoutItem);
     }
 
     this.timeoutItem = setTimeout(() => {
-      this.updateTableData(false, { id, updatedValue, column });
+      this.updateTableData(false, { index, updatedValue, column });
       this.toolbarTotalsComponent.setTotals();
     }, 200);
 
-    this.addRow(id);
   }
 
-  addRow(id: number) {
-    const currentIndex = this.getExpenseIndex(id);
+  addRow(index: number) {
     const lastIndex = this.expenses().length - 1;
 
-    if (currentIndex === lastIndex) {
-      this.updateTableData(true, null);
+    if (index === -1) {
+      index = lastIndex;
     }
+
+    if (index === lastIndex) {
+      this.updateTableData(true, index);
+      return true;
+    }
+    return false;
   }
 
   deleteSelectedExpenses() {
@@ -100,69 +110,31 @@ export class MainTableComponent {
       if (deleteRow) {
         updatedValues = newValue.filter((val: any) => !this.selectedExpenses?.includes(val));
       } else if (newRow) {
-        updatedValues = [...newValue, this.getBlankRow()]
+        updatedValues = [...newValue, this.getBlankRow(data)];
       } else {
         updatedValues = newValue;
-        const index = this.getExpenseIndex(data.id);
-        updatedValues[index][data.column] = data.updatedValue;
+        updatedValues[data.index][data.column] = data.updatedValue;
       }
       return updatedValues
     })
   }
 
-  getExpenseIndex(id: number) {
-    const allExpenses = this.expenses();
-    return allExpenses.findIndex((expense: any) => expense.id === id);
-  }
-
-  getBlankRow() {
+  getBlankRow(indexRow: number) {
     const cols = this.expenseTableColumnsService.showColumnsSignal();
-    const newRow: { [key: string]: string | { name: string, code: string } } = {};
+    const newRow: { [key: string]: number | string | { name: string, code: string } } = {};
 
     for (let index = 0; index < cols.length; index++) {
       const field = cols[index].field;
-      newRow[field] = "";
+
+      if (field === "id") {
+        newRow[field] = indexRow + 2;
+        continue
+      }
+
+      newRow[field] = cols[index].defaultValue;
     }
 
     return newRow
-  }
-
-  deleteArrayValues(actualColumns: any[], columnsToDelete: string[], exceptions: string[], additionalField: string) {
-
-    for (let index = 0; index < actualColumns.length; index++) {
-      if (exceptions.includes(actualColumns[index].field)) {
-        continue
-      }
-
-      for (let i = 0; i < columnsToDelete.length; i++) {
-        const isEqual = (actualColumns[index][additionalField] as string).toUpperCase() === columnsToDelete[i].toUpperCase();
-
-        if (isEqual) {
-          actualColumns.splice(index, 1);
-          index--;
-        }
-      }
-    }
-
-    return actualColumns
-  }
-
-  validadeArrayUniqueValues(newValuesArray: string[], actualArray: any[], additionalField: string) {
-    const validValues = [];
-
-    for (let index = 0; index < newValuesArray.length; index++) {
-      const valueExists = actualArray.findIndex(column => column[additionalField].toUpperCase() === newValuesArray[index].toUpperCase());
-
-      if (valueExists != -1) {
-        continue
-      }
-      validValues.push(newValuesArray[index]);
-    }
-    return validValues
-  }
-
-  capitalizeFirstLetter(value: string) {
-    return value.charAt(0).toUpperCase() + value.slice(1);
   }
 
   clear(table: Table) {
