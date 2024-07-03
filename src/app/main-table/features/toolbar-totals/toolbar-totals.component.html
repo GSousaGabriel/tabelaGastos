@@ -10,14 +10,15 @@
         <label class="mr-3">Total by {{fb.get('categorySelected')?.value}}: {{totals().category | reais}}</label>
         <form [formGroup]="fb">
             <span class="p-float-label">
-                <p-dropdown [options]="categories" formControlName="categorySelected" placeholder="Select a Category"
+                <p-dropdown [options]="categories()['expense']" formControlName="categorySelected" placeholder="Select a Category"
                     (onChange)="setTotals()" optionLabel="name" optionValue="code"
                     inputId="categorySelected"></p-dropdown>
                 <label for="categorySelected">Select a Category</label>
             </span>
         </form>
         <div class="flex align-items-center justify-content-between gap-2 ml-2">
-            <p-button label="Charts" icon="pi pi-chart-pie"></p-button>
+            <p-button label="Charts" icon="pi pi-chart-pie" (onClick)="openModalChart()"></p-button>
+            <app-charts></app-charts>
         </div>
     </ng-template>
 </p-toolbar>

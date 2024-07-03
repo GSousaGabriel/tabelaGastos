@@ -1,10 +1,9 @@
-import { Component, Input, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { InputTextModule } from 'primeng/inputtext';
-import { ShowModalNewRowService } from '../../../services/show-modal-new-row.service';
+import { ShowModalManagementService } from '../../../services/show-modal-management.service';
 import { ExpenseTableColumnsService } from '../../../services/expense-table-columns.service';
-import { Column } from '../../../interfaces/column';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { CategoryManagementComponent } from '../category-management/category-management.component';
 
@@ -23,7 +22,7 @@ export class ToolbarColumnComponent {
 
   constructor(
     private formBuilder: FormBuilder,
-    private showModalNewRowService: ShowModalNewRowService,
+    private showModalNewRowService: ShowModalManagementService,
     private expenseTableColumnsService: ExpenseTableColumnsService
   ) { }
 
@@ -66,6 +65,6 @@ export class ToolbarColumnComponent {
   // }
 
   openModal(type: string) {
-    if (type === "columnsOptions") this.showModalNewRowService.canShow(true);
+    if (type === "columnsOptions") this.showModalNewRowService.canShowNewRow(true);
   }
 }

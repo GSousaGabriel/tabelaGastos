@@ -11,7 +11,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
-import { ShowModalNewRowService } from '../services/show-modal-new-row.service';
+import { ShowModalManagementService } from '../services/show-modal-management.service';
 import { ModalColumnEditComponent } from '../features/modal-column-edit/modal-column-edit.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToolbarColumnComponent } from './features/toolbar-column/toolbar-column.component';
@@ -45,7 +45,7 @@ export class MainTableComponent {
 
   constructor(
     private mainTableService: MainTableService,
-    protected showModalNewRowService: ShowModalNewRowService,
+    protected showModalNewRowService: ShowModalManagementService,
     protected expenseTableColumnsService: ExpenseTableColumnsService,
     private categoryService: ExpenseCategoriesService,
     private messageService: MessageService

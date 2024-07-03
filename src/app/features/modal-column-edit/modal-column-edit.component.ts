@@ -1,5 +1,5 @@
 import { FormsModule } from '@angular/forms';
-import { ShowModalNewRowService } from './../../services/show-modal-new-row.service';
+import { ShowModalManagementService } from '../../services/show-modal-management.service';
 import { Component, effect } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -20,7 +20,7 @@ export class ModalColumnEditComponent {
   columns!: Column[];
 
   constructor(
-    private showModalNewRowService: ShowModalNewRowService,
+    private showModalNewRowService: ShowModalManagementService,
     private expenseTableColumnsService: ExpenseTableColumnsService
   ) {
     effect(() => {
@@ -33,7 +33,7 @@ export class ModalColumnEditComponent {
   }
 
   closeModal() {
-    this.showModalNewRowService.canShow(false);
+    this.showModalNewRowService.canShowNewRow(false);
   }
 
   updateOrderingRows(index: number) {

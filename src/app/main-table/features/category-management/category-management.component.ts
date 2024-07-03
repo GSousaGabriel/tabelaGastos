@@ -40,8 +40,8 @@ export class CategoryManagementComponent {
         type,
         validationField: "code",
         dataValues: this.categoryService.showCategorySignal()[type],
-        updateDataFn: this.categoryService.updateCategories,
-        setDataFn: this.expenseTableColumnsService.updateColumns,
+        updateDataFn: this.categoryService.updateCategories.bind(this.categoryService),
+        setDataFn: this.categoryService.setCategories.bind(this.categoryService),
         fixFormatDataFn: this.categoryFormat
       }
     } else {
@@ -49,8 +49,8 @@ export class CategoryManagementComponent {
         type,
         validationField: "field",
         dataValues: this.expenseTableColumnsService.showColumnsSignal(),
-        updateDataFn: this.expenseTableColumnsService.updateColumns,
-        setDataFn: this.expenseTableColumnsService.updateColumns,
+        updateDataFn: this.expenseTableColumnsService.updateColumns.bind(this.expenseTableColumnsService),
+        setDataFn: this.expenseTableColumnsService.setColumns.bind(this.expenseTableColumnsService),
         fixFormatDataFn: this.columnFormat
       }
     }
@@ -73,11 +73,11 @@ export class CategoryManagementComponent {
         for (let index = 0; index < validValues.length; index++) {
           let code = validValues[index].toLowerCase();
           let name = this.capitalize(code);
-          let fixedFormat = this.managedData.fixFormatDataFn(code, name)
+          let fixedFormat = this.managedData.fixFormatDataFn(name, code)
           newValues.push(fixedFormat);
         }
       }
-      this.managedData.updateDataFn(this.managedData.type, newValues);
+      this.categoryService.updateCategories(this.managedData.type, newValues);
     } else {
       const categoriesArray = (values as string).split(",");
       const lockedRows = this.categoryService.getDefaultCategories(this.managedData.type);

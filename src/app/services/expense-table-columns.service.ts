@@ -49,6 +49,7 @@ export class ExpenseTableColumnsService {
       { field: 'paid', orderActive: false, defaultValue: "" },
       { field: 'recurrence', orderActive: false, defaultValue: "" },
       { field: 'category', orderActive: false, defaultValue: "" },
+      { field: 'description', orderActive: false, defaultValue: "" },
       { field: 'date', orderActive: false, defaultValue: "" },
       { field: 'value', orderActive: false, defaultValue: "" }
     ]
