@@ -40,8 +40,8 @@ export class CategoryManagementComponent {
         type,
         validationField: "code",
         dataValues: this.categoryService.showCategorySignal()[type],
-        updateDataFn: this.categoryService.updateCategories,
-        setDataFn: this.expenseTableColumnsService.updateColumns,
+        updateDataFn: this.categoryService.updateCategories.bind(this.categoryService),
+        setDataFn: this.expenseTableColumnsService.updateColumns.bind(this.expenseTableColumnsService),
         fixFormatDataFn: this.categoryFormat
       }
     } else {
@@ -49,8 +49,8 @@ export class CategoryManagementComponent {
         type,
         validationField: "field",
         dataValues: this.expenseTableColumnsService.showColumnsSignal(),
-        updateDataFn: this.expenseTableColumnsService.updateColumns,
-        setDataFn: this.expenseTableColumnsService.updateColumns,
+        updateDataFn: this.expenseTableColumnsService.updateColumns.bind(this.expenseTableColumnsService),
+        setDataFn: this.expenseTableColumnsService.updateColumns.bind(this.expenseTableColumnsService),
         fixFormatDataFn: this.columnFormat
       }
     }

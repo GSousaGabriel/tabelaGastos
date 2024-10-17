@@ -1,13 +1,25 @@
 <p-toolbar styleClass="mt-2 mb-2">
     <ng-template pTemplate="left">
-        <div>
-            <label class="mr-3">Total: {{totals().total | reais}}</label>
-            <label class="mr-3">Total paid: {{totals().paid | reais}}</label>
-            <label class="mr-3">Total fixed: {{totals().fixed | reais}}</label>
+        @if (loadingTotals) {
+        <div class="flex flex-col">
+            <p-skeleton styleClass="mr-3 w-10rem" />
+            <p-skeleton styleClass="mr-3 w-10rem" />
+            <p-skeleton styleClass="mr-3 w-10rem" />
         </div>
+        }@else {
+        <div>
+            <label class="mr-3 w-10rem">Total: {{totals().total | reais}}</label>
+            <label class="mr-3 w-10rem">Total paid: {{totals().paid | reais}}</label>
+            <label class="mr-3 w-10rem">Total fixed: {{totals().fixed | reais}}</label>
+        </div>
+        }
     </ng-template>
     <ng-template pTemplate="right">
+        @if (loadingTotals) {
+        <p-skeleton styleClass="mr-3 w-10rem" />
+        }@else {
         <label class="mr-3">Total by {{fb.get('categorySelected')?.value}}: {{totals().category | reais}}</label>
+        }
         <form [formGroup]="fb">
             <span class="p-float-label">
                 <p-dropdown [options]="categories" formControlName="categorySelected" placeholder="Select a Category"
@@ -16,8 +28,5 @@
                 <label for="categorySelected">Select a Category</label>
             </span>
         </form>
-        <div class="flex align-items-center justify-content-between gap-2 ml-2">
-            <p-button label="Charts" icon="pi pi-chart-pie"></p-button>
-        </div>
     </ng-template>
 </p-toolbar>

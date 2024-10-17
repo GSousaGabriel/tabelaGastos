@@ -1,3 +1,7 @@
 ::ng-deep body{
     background-color: white;
 }
+
+::ng-deep .p-datatable-wrapper{
+    max-height: calc(100vh - 16em);
+}

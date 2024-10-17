@@ -1,6 +1,7 @@
 import { Component, WritableSignal, input, signal } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
+import { SkeletonModule } from 'primeng/skeleton';
 import { totalExpenseSignal } from '../../../models/totalExpense.model';
 import { ReaisPipe } from "../../../pipes/reais.pipe";
 import { DropdownModule } from 'primeng/dropdown';
@@ -13,7 +14,7 @@ import { DropdownField } from '../../../interfaces/dropdownField';
   standalone: true,
   templateUrl: './toolbar-totals.component.html',
   styleUrl: './toolbar-totals.component.scss',
-  imports: [ReactiveFormsModule, ToolbarModule, ButtonModule, DropdownModule, ReaisPipe]
+  imports: [ReactiveFormsModule, ToolbarModule, ButtonModule, DropdownModule, ReaisPipe, SkeletonModule]
 })
 export class ToolbarTotalsComponent {
   totals: WritableSignal<totalExpenseSignal> = signal({ total: "0", paid: "0", fixed: "0", category: "0" });
@@ -22,7 +23,8 @@ export class ToolbarTotalsComponent {
     categorySelected: ["",]
   })
   expenses = input<any[]>([]);
-  timeoutCalculations!: any;
+  timeoutCalculations!: ReturnType<typeof setTimeout>;
+  loadingTotals = false;
 
   constructor(
     private formBuilder: FormBuilder,
@@ -30,6 +32,8 @@ export class ToolbarTotalsComponent {
   ) { }
 
   setTotals(isCategory = false) {
+    this.loadingTotals = true
+
     if (this.timeoutCalculations) {
       clearTimeout(this.timeoutCalculations);
     }
@@ -66,6 +70,7 @@ export class ToolbarTotalsComponent {
           return current
         });
       }
+      this.loadingTotals = false
     }, 200);
   }
 }

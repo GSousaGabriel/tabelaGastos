@@ -1,24 +1,6 @@
 <form [formGroup]="fb">
-    <p-toolbar>
-        <ng-template pTemplate="left">
-            <div class="flex flex-column gap-2">
-                <label for="newColumns">Add Columns</label>
-                <input pInputText id="newColumns" name="newColumns" type="text" pInputText formControlName="newColumns"
-                    aria-labelledby="newColumns" aria-describedby="newColumns-help" />
-                <small id="newColumns-help">To insert multiple columns, separate them with a
-                    coma(column1,column2).</small>
-            </div>
-            <p-button label="Add columns" class="ml-3" severity="success" icon="pi pi-plus"
-                (onClick)="addColumns()"></p-button>
-            <p-button label="Remove columns" icon="pi pi-trash" severity="danger" class="ml-3"
-                (onClick)="deleteColumns()"></p-button>
-            <p-button label="Manage Columns" icon="pi pi-trash" severity="danger" class="ml-3"
-                (click)="categoryManagementComponent.visible= true; categoryManagementComponent.setDataManager('columns');"></p-button>
-        </ng-template>
-        <ng-template pTemplate="right">
-            <p-button label="configure Columns" severity="help" icon="pi pi-cog"
-                (onClick)="openModal('columnsOptions')"></p-button>
-        </ng-template>
-    </p-toolbar>
+    <p-splitButton icon="pi pi-cog" label="Manage columns" class="ml-3"
+        (onClick)="categoryManagementComponent.visible= true; categoryManagementComponent.setDataManager('columns');"
+        [model]="items" />
     <app-category-management></app-category-management>
 </form>
