@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 
-from pymongo_get_database import get_database
+from backend.get_database import get_database
 from test_insert import instert_via_api
 
 app = FastAPI()

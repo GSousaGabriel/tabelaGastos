@@ -1,5 +1,5 @@
 # Get the database using the method we defined in pymongo_test_insert file
-from pymongo_get_database import get_database
+from backend.get_database import get_database
 
 def instert_via_api():
   dbname = get_database()
