@@ -4,16 +4,19 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
+import { ToastModule } from 'primeng/toast';
 import { NgStyle } from '@angular/common';
 import { LoginService } from './login.service';
 import { passValidation } from '../models/passValidation.model';
 import { User } from '../models/user.model';
 import { Router } from '@angular/router';
+import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgStyle, InputTextModule, PasswordModule, DividerModule, ButtonModule],
+  imports: [ReactiveFormsModule, NgStyle, InputTextModule, PasswordModule, DividerModule, ButtonModule, ToastModule],
+  providers:[MessageService],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
 })
@@ -27,7 +30,7 @@ export class LoginComponent implements AfterViewInit {
   });
   loading = signal(false);
   fb = this.formBuilder.group({
-    username: new FormControl('', [Validators.required, Validators.minLength(1)]),
+    email: new FormControl('', [Validators.required, Validators.minLength(1)]),
     password: new FormControl('', this.validPass()),
   });
 
@@ -35,7 +38,8 @@ export class LoginComponent implements AfterViewInit {
     private elementRef: ElementRef,
     private validateLoginService: LoginService,
     private router: Router,
-    private formBuilder: FormBuilder
+    private formBuilder: FormBuilder,
+    private messageService: MessageService
   ) { }
 
   ngAfterViewInit(): void {
@@ -49,7 +53,7 @@ export class LoginComponent implements AfterViewInit {
   }
 
   validLoginFields(): void {
-    if (this.fb.get("password")?.value && this.fb.get("username")?.value) this.login();
+    if (this.fb.get("password")?.value && this.fb.get("email")?.value) this.login();
   }
 
   login(): void {
@@ -57,7 +61,18 @@ export class LoginComponent implements AfterViewInit {
     let valid = false
 
     if (this.fb.valid) {
-      valid = this.validateLoginService.validateLogin(this.getUserData());
+      this.validateLoginService.validateLogin(this.getUserData()).subscribe({
+        next: (response) => {
+          valid = true
+          this.messageService.add({ severity: 'success', summary: 'Error', detail: response.message });
+        },
+        error: (err) => {
+          if(err.status != 500){
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.statusText });
+          }
+          return err
+        },
+      });
     }
     if (valid) this.router.navigate(["/mainTable"])
     this.loading.update(newValue => !newValue);
@@ -65,7 +80,7 @@ export class LoginComponent implements AfterViewInit {
 
   getUserData(): User {
     const user = {
-      username: this.fb.get("username")!.value as string,
+      email: this.fb.get("email")!.value as string,
       password: this.fb.get("password")!.value as string
     }
 

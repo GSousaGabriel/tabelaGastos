@@ -1,16 +1,19 @@
 from fastapi import FastAPI
-
-from backend.get_database import get_database
-from test_insert import instert_via_api
+from backend.authAPI import login
+from backend.utils.get_database import get_database
+from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 
-@app.get("/")
-def read_root():
-    result =instert_via_api()
-    print(result)
-    return {"Hello": "World"}
-
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Change this to your allowed origin(s)
+    allow_credentials=True,
+    allow_methods=["*"],  # Explicitly specify allowed methods
+    allow_headers=["*"],  # Allow all headers
+)
+app.include_router(login.router)
 
 @app.get("/items/{item_id}")
 def read_item(item_id: str):
