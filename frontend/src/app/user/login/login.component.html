@@ -9,7 +9,7 @@
         <div class="pass">
             <label for="password">Password: </label>
             <p-password id="password" name="password" [toggleMask]="true" formControlName="password"
-                aria-labelledby="password" (onFocus)="validatePassTips()">
+                aria-labelledby="password">
                 <ng-template pTemplate="footer">
                     <p-divider></p-divider>
                     <p class="mt-2">Suggestions</p>
@@ -26,6 +26,7 @@
                 </ng-template>
             </p-password>
         </div>
-        <p-button label="Login" [loading]="loading()" (onClick)="validLoginFields()"></p-button>
+        <p-button label="Login" [loading]="loading()" (onClick)="login()"></p-button>
+        <p>Not registered yet? <a routerLink="/user/register" routerLinkActive="active" ariaCurrentWhenActive="page">Register Here!</a></p>
     </div>
 </form>

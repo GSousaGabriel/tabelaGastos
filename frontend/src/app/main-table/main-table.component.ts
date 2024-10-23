@@ -52,14 +52,19 @@ export class MainTableComponent {
   ) { }
 
   ngOnInit() {
-    this.mainTableService.getProductsMini().then((data: any) => {
-      this.expenses.set(data);
-      this.addRow(-1);
+    this.mainTableService.getFinancialData().subscribe({
+      next: (response) => {
+        this.expenses.set(response.data);
+        this.addRow(-1);
 
-      for (let index = 0; index < 24; index++) {
-        const fixedValue = (index + 1);
-        this.periodOptions?.push({ name: fixedValue, code: fixedValue });
-      }
+        for (let index = 0; index < 24; index++) {
+          const fixedValue = (index + 1);
+          this.periodOptions?.push({ name: fixedValue, code: fixedValue });
+        }
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.statusText });
+      },
     });
   }
 

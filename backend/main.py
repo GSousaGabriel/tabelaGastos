@@ -1,5 +1,6 @@
 from fastapi import FastAPI
-from backend.authAPI import login
+from backend.routes.authAPI import user
+from backend.routes.main_data import finances
 from backend.utils.get_database import get_database
 from starlette.middleware.cors import CORSMiddleware
 
@@ -13,7 +14,8 @@ app.add_middleware(
     allow_methods=["*"],  # Explicitly specify allowed methods
     allow_headers=["*"],  # Allow all headers
 )
-app.include_router(login.router)
+app.include_router(user.router)
+app.include_router(finances.router)
 
 @app.get("/items/{item_id}")
 def read_item(item_id: str):

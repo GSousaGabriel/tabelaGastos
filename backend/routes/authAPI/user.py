@@ -5,14 +5,14 @@ from pydantic import BaseModel
 from backend.utils.get_database import get_database
 
 router = APIRouter(
-    prefix="/api/auth"
+    prefix="/api/user"
 )
 
 class User(BaseModel):
     email: str | None = None
     password: str | None = None
     
-@router.post("/login", response_model=User, tags=["auth"])
+@router.post("/login", response_model=User, tags=["user"])
 async def get_user(user: User):
     try:
         user_encoded = jsonable_encoder(user)
@@ -27,13 +27,13 @@ async def get_user(user: User):
     except:
         return JSONResponse(content={"message": "Server error!", "status": 500}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
     
-@router.post("/register", response_model=User, tags=["auth"])
+@router.post("/register", response_model=User, tags=["user"])
 async def get_user(user: User):
     try:
         user_encoded = jsonable_encoder(user)
         db = get_database()
         collection = db["users"]
-        user = collection.find_one({"email": user_encoded["email"], "password": user_encoded["password"]})
+        user = collection.find_one({"email": user_encoded["email"]})
     
         if user:
             return JSONResponse(content={"message": "user already registered!", "status": 409}, status_code=status.HTTP_409_CONFLICT)

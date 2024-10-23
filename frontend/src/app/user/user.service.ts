@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
 import { User } from '../models/user.model';
-import { map, Observable } from 'rxjs';
+import { Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 @Injectable({
   providedIn: 'root'
 })
-export class LoginService {
+export class UserService {
   private apiUrl = 'http://localhost:8000/api';
 
   constructor(
@@ -14,6 +14,10 @@ export class LoginService {
   ) { }
 
   validateLogin(user: User): Observable<any> {
-    return this.http.post(`${this.apiUrl}/auth/login`, user)
+    return this.http.post(`${this.apiUrl}/user/login`, user)
+  }
+
+  registerUser(user: User): Observable<any> {
+    return this.http.post(`${this.apiUrl}/user/register`, user)
   }
 }

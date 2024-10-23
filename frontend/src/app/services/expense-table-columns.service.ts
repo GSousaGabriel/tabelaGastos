@@ -43,7 +43,6 @@ export class ExpenseTableColumnsService {
 
   getDefaultColumns() {
     return [
-      { field: 'id', orderActive: false, defaultValue: 0 },
       { field: 'type', orderActive: false, defaultValue: "expense" },
       { field: 'fixed', orderActive: false, defaultValue: "" },
       { field: 'paid', orderActive: false, defaultValue: "" },

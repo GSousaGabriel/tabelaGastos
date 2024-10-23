@@ -70,8 +70,7 @@
                             <td>
                                 <p-inputSwitch inputId="isPaid" name="isPaid"
                                     (onChange)="updateRow(index, $event.checked, col.field)"
-                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
-                                    trueValue="paid" falseValue="notPaid"></p-inputSwitch>
+                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-inputSwitch>
                             </td>
                             }
                             @else if (col.field === "recurrence") {
@@ -99,7 +98,7 @@
                                     appendTo="body"></p-calendar>
                             </td>
                             }
-                            @else if (col.field != "id") {
+                            @else {
                             <td [pEditableColumn]="rowData[col.field]" pEditableColumnField="{{col.field}}">
                                 <p-cellEditor>
                                     @if (col.field === "value") {
