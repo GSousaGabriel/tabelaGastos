@@ -2,7 +2,7 @@ import { Component, Input, ViewChild } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { ToolbarModule } from 'primeng/toolbar';
 import { InputTextModule } from 'primeng/inputtext';
-import { ShowModalNewRowService } from '../../../services/show-modal-new-row.service';
+import { ShowModalColumnConfigService } from '../../../services/show-modal-column-config.service';
 import { SplitButtonModule } from 'primeng/splitbutton';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { CategoryManagementComponent } from '../category-management/category-management.component';
@@ -23,17 +23,24 @@ export class ToolbarColumnComponent {
     {
       label: 'Columns to order',
       command: () => {
-        this.openModal('columnsOptions');
+        this.openModal('order');
+      }
+    },
+    {
+      label: 'Columns to filter',
+      command: () => {
+        this.openModal('filter');
       }
     }
   ]
 
   constructor(
     private formBuilder: FormBuilder,
-    private showModalNewRowService: ShowModalNewRowService
+    private showModalColumnConfigService: ShowModalColumnConfigService
   ) { }
 
   openModal(type: string) {
-    if (type === "columnsOptions") this.showModalNewRowService.canShow(true);
+    this.showModalColumnConfigService.canShow(true);
+    this.showModalColumnConfigService.setType(type);
   }
 }

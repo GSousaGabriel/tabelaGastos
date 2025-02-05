@@ -5,7 +5,7 @@ import { DropdownField } from '../interfaces/dropdownField';
   providedIn: 'root'
 })
 export class ExpenseCategoriesService {
-  private categorySignal: WritableSignal<{[key: string]: any[]}> = signal({
+  private categorySignal: WritableSignal<{ [key: string]: any[] }> = signal({
     expense: [],
     income: []
   });
@@ -16,14 +16,14 @@ export class ExpenseCategoriesService {
     this.setupDefaultCategories("income");
   }
 
-  setCategories(type: string, newValue: DropdownField[]) {
+  setCategories(newValue: DropdownField[], type: string) {
     this.categorySignal.update(current => {
       current[type] = newValue;
       return current
     });
   }
 
-  updateCategories(type: string, newCategories: DropdownField[]) {
+  updateCategories(newCategories: DropdownField[], type: string) {
     this.categorySignal.update(current => {
       current[type] = [...current[type], ...newCategories];
       return current;
@@ -39,7 +39,7 @@ export class ExpenseCategoriesService {
 
       defaultCategoriesSignal.push({ name, code: defaultCategories[index] });
     }
-    this.setCategories(type, defaultCategoriesSignal)
+    this.setCategories(defaultCategoriesSignal, type)
   }
 
   getDefaultCategories(type: string) {

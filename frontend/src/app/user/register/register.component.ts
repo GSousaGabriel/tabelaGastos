@@ -1,7 +1,7 @@
 import { Component, signal } from '@angular/core';
 import { AbstractControl, FormBuilder, FormControl, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
 import { UserService } from '../user.service';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MessageService } from 'primeng/api';
 import { passValidation } from '../../models/passValidation.model';
 import { User } from '../../models/user.model';
@@ -15,7 +15,7 @@ import { ToastModule } from 'primeng/toast';
 @Component({
   selector: 'app-register',
   standalone: true,
-  imports: [ReactiveFormsModule, NgStyle, InputTextModule, PasswordModule, DividerModule, ButtonModule, ToastModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [ReactiveFormsModule, NgStyle, InputTextModule, PasswordModule, DividerModule, ButtonModule, ToastModule, RouterLink, RouterLinkActive],
   providers: [MessageService],
   templateUrl: './register.component.html',
   styleUrl: './register.component.scss'
@@ -50,7 +50,7 @@ export class RegisterComponent {
           this.loading.update(newValue => !newValue);
           setTimeout(() => {
             this.router.navigate(["/user/login"])
-          }, 300);
+          }, 500);
         },
         error: (err) => {
           if (err.status == 409) {

@@ -22,6 +22,7 @@ export class CategoryManagementComponent {
   managedData: FactoriedVariableArray = {
     type: "",
     validationField: "",
+    lockedRows: [],
     dataValues: [],
     updateDataFn: () => { },
     setDataFn: () => { },
@@ -39,18 +40,20 @@ export class CategoryManagementComponent {
       this.managedData = {
         type,
         validationField: "code",
+        lockedRows: this.categoryService.getDefaultCategories(type),
         dataValues: this.categoryService.showCategorySignal()[type],
         updateDataFn: this.categoryService.updateCategories.bind(this.categoryService),
-        setDataFn: this.expenseTableColumnsService.updateColumns.bind(this.expenseTableColumnsService),
+        setDataFn: this.categoryService.setCategories.bind(this.categoryService),
         fixFormatDataFn: this.categoryFormat
       }
     } else {
       this.managedData = {
         type,
         validationField: "field",
+        lockedRows: this.expenseTableColumnsService.getDefaultColumns().map(defaultColumn => defaultColumn.field),
         dataValues: this.expenseTableColumnsService.showColumnsSignal(),
         updateDataFn: this.expenseTableColumnsService.updateColumns.bind(this.expenseTableColumnsService),
-        setDataFn: this.expenseTableColumnsService.updateColumns.bind(this.expenseTableColumnsService),
+        setDataFn: this.expenseTableColumnsService.setColumns.bind(this.expenseTableColumnsService),
         fixFormatDataFn: this.columnFormat
       }
     }
@@ -67,42 +70,41 @@ export class CategoryManagementComponent {
       const newValues = [];
       const newCategories = (values as string).split(",");
       const currentCategories = this.managedData.dataValues;
-      const validValues = this.validateArray(newCategories, currentCategories, this.managedData.validationField);
+      const validValues = this.validateArray(newCategories, currentCategories);
 
       if (validValues.length > 0) {
         for (let index = 0; index < validValues.length; index++) {
-          let code = validValues[index].toLowerCase();
-          let name = this.capitalize(code);
+          let name = validValues[index].toLowerCase().trim();
+          let code = this.capitalize(name);
           let fixedFormat = this.managedData.fixFormatDataFn(code, name)
           newValues.push(fixedFormat);
         }
       }
-      this.managedData.updateDataFn(this.managedData.type, newValues);
+      this.managedData.updateDataFn(newValues, this.managedData.type);
     } else {
       const categoriesArray = (values as string).split(",");
-      const lockedRows = this.categoryService.getDefaultCategories(this.managedData.type);
       const allCategories = this.managedData.dataValues;
-      const newArray = this.deleteArrayValues(allCategories, categoriesArray, lockedRows, this.managedData.validationField);
+      const newArray = this.deleteArrayValues(allCategories, categoriesArray);
 
-      this.managedData.setDataFn(this.managedData.type, newArray);
+      this.managedData.setDataFn(newArray, this.managedData.type);
     }
     this.visible = false;
     this.fb.get("dataToAdd")?.setValue("");
   }
 
-  columnFormat(field: string, header: string) {
-    return { field, header, orderActive: false, defaultValue: "" }
+  columnFormat(header: string, field: string) {
+    return { field, header, orderActive: false, filterActive: false, defaultValue: "" }
   }
 
   categoryFormat(name: string, code: string) {
     return { name, code }
   }
 
-  validateArray(newValuesArray: string[], actualArray: any[], additionalField: string) {
+  validateArray(newValuesArray: string[], actualArray: any[]) {
     const validValues = [];
 
     for (let index = 0; index < newValuesArray.length; index++) {
-      const valueExists = actualArray.findIndex(column => column[additionalField].toUpperCase() === newValuesArray[index].toUpperCase().trim());
+      const valueExists = actualArray.findIndex(column => column[this.managedData.validationField].toUpperCase() === newValuesArray[index].toUpperCase().trim());
 
       if (valueExists != -1) {
         continue
@@ -116,23 +118,24 @@ export class CategoryManagementComponent {
     return value.charAt(0).toUpperCase() + value.slice(1);
   }
 
-  deleteArrayValues(actualColumns: any[], columnsToDelete: string[], exceptions: string[], additionalField: string) {
+  deleteArrayValues(actualArray: any[], valuesToDelete: string[]) {
+    const actualFields = actualArray.map(actualArray => actualArray[this.managedData.validationField])
 
-    for (let index = 0; index < actualColumns.length; index++) {
-      if (exceptions.includes(actualColumns[index].field)) {
+    for (let i = 0; i < valuesToDelete.length; i++) {
+      const normalizedDataValue = valuesToDelete[i].toLocaleLowerCase().trim();
+
+      if (this.managedData.lockedRows.includes(normalizedDataValue)) {
         continue
       }
 
-      for (let i = 0; i < columnsToDelete.length; i++) {
-        const isEqual = (actualColumns[index][additionalField] as string).toUpperCase() === columnsToDelete[i].toUpperCase();
+      const indexToDelete = actualFields.findIndex(actualField => actualField.toLowerCase() === normalizedDataValue)
 
-        if (isEqual) {
-          actualColumns.splice(index, 1);
-          index--;
-        }
+      if (indexToDelete != -1) {
+        actualArray.splice(indexToDelete, 1);
+        actualFields.splice(indexToDelete, 1);
       }
     }
 
-    return actualColumns
+    return actualArray
   }
 }

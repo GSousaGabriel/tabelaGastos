@@ -1,5 +1,5 @@
 import { FormsModule } from '@angular/forms';
-import { ShowModalNewRowService } from './../../services/show-modal-new-row.service';
+import { ShowModalColumnConfigService } from '../../services/show-modal-column-config.service';
 import { Component, effect } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
@@ -18,25 +18,28 @@ import { InputSwitchModule } from 'primeng/inputswitch';
 export class ModalColumnEditComponent {
   visible = false;
   columns!: Column[];
+  type!: string;
+  header!: string;
 
   constructor(
-    private showModalNewRowService: ShowModalNewRowService,
+    private showModalColumnConfigService: ShowModalColumnConfigService,
     private expenseTableColumnsService: ExpenseTableColumnsService
   ) {
     effect(() => {
-      this.visible = this.showModalNewRowService.showModalNewRow();
+      this.visible = this.showModalColumnConfigService.showModalColumnConfig();
+      this.type = this.showModalColumnConfigService.showModalColumnConfigType();
+
+      this.header = `Active ${this.type} option for:`
     });
 
-    const allColumns = expenseTableColumnsService.showColumnsSignal();
-    allColumns.shift();
-    this.columns = allColumns;
+    this.columns = expenseTableColumnsService.showColumnsSignal();
   }
 
   closeModal() {
-    this.showModalNewRowService.canShow(false);
+    this.showModalColumnConfigService.canShow(false);
   }
 
   updateOrderingRows(index: number) {
-    this.expenseTableColumnsService.updateColumnsOrdering(index);
+    this.expenseTableColumnsService.updateColumnsActions(index, this.type);
   }
 }

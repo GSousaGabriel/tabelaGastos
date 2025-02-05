@@ -1,7 +1,8 @@
 export interface Column {
-    [key: string]: string | boolean | number,
+    [key: string]: string | boolean | number | Date,
     field: string,
     header: string,
     orderActive: boolean,
-    defaultValue: string | number
+    filterActive: boolean,
+    defaultValue: string | number | Date
 }

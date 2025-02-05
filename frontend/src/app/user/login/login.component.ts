@@ -9,13 +9,13 @@ import { NgStyle } from '@angular/common';
 import { UserService } from '../user.service';
 import { passValidation } from '../../models/passValidation.model';
 import { User } from '../../models/user.model';
-import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive } from '@angular/router';
 import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [ReactiveFormsModule, NgStyle, InputTextModule, PasswordModule, DividerModule, ButtonModule, ToastModule, RouterOutlet, RouterLink, RouterLinkActive],
+  imports: [ReactiveFormsModule, NgStyle, InputTextModule, PasswordModule, DividerModule, ButtonModule, ToastModule, RouterLink, RouterLinkActive],
   providers: [MessageService],
   templateUrl: './login.component.html',
   styleUrl: './login.component.scss'
@@ -51,7 +51,7 @@ export class LoginComponent {
           this.loading.update(newValue => !newValue);
           setTimeout(() => {
             this.router.navigate(["/mainTable"])
-          }, 300);
+          }, 500);
         },
         error: (err) => {
           if (err.status != 500) {

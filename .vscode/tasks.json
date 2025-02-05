@@ -1,13 +1,20 @@
 {
-	"version": "2.0.0",
-	"tasks": [
-		{
-			"type": "npm",
-			"script": "start",
-			"path": "frontend",
-			"problemMatcher": [],
-			"label": "npm: start - frontend",
-			"detail": "ng start"
-		}
-	]
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "npm: start",
+            "type": "shell",
+            "command": "npm",
+            "args": ["start"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "detail": "Starts Angular development server",
+            "options": {
+                "cwd": "${workspaceFolder}/frontend"
+            }
+        }
+    ]
 }

@@ -5,14 +5,17 @@
                 <app-toolbar-totals [expenses]="expenses()"></app-toolbar-totals>
             </div>
             <div class="pd-4 h-screen">
-                <p-table [columns]="expenseTableColumnsService.showColumnsSignal()" [value]="expenses()" dataKey="id"
-                    styleClass="p-datatable-striped p-datatable-sm" #dataTable [(selection)]="selectedExpenses">
+                <p-table [columns]="expenseTableColumnsService.showColumnsSignal()" [value]="expenses()" dataKey="_id"
+                    styleClass="p-datatable-striped p-datatable-sm" #dataTable [(selection)]="selectedExpenses"
+                    selectionMode="multiple">
                     <ng-template pTemplate="caption" class="w-auto">
                         <div class="flex">
                             <p-button label="Delete Selected Items" icon="pi pi-trash" class="p-button-danger ml-3"
                                 (click)="deleteSelectedExpenses()"
                                 [disabled]="!selectedExpenses || !selectedExpenses.length"></p-button>
                             <div class="flex flex-col ml-auto">
+                                <p-calendar [(ngModel)]="filterPeriod" inputId="filterPeriod" view="month"
+                                    dateFormat="mm/yy" [readonlyInput]="true" (onSelect)="loadTable()" />
                                 <span class="p-input-icon-left ml-3">
                                     <i class="pi pi-search"></i>
                                     <input pInputText type="text"
@@ -28,18 +31,20 @@
                     <ng-template pTemplate="header" styleClass="p-datatable-header" let-columns>
                         <tr>
                             <th style="width: 4rem">
-                                <p-tableHeaderCheckbox></p-tableHeaderCheckbox>
+                                <p-tableHeaderCheckbox />
                             </th>
                             @for (col of columns; track $index) {
-                            @if (col.orderActive) {
-                            <th [pSortableColumn]="col.field"> {{ col.header }} <p-sortIcon [field]="col.field"
-                                    pSortableColumnDisabled="false"></p-sortIcon></th>
-                            }
-                            @else if (col.field != "id") {
-                            <th>
-                                {{ col.header }}
+                            <th [pSortableColumn]="col.orderActive ? col.field : ''">
+                                <div class="flex align-items-center">
+                                    {{ col.header }}
+                                    @if (col.orderActive) {
+                                    <p-sortIcon [field]="col.field" pSortableColumnDisabled="false" />
+                                    }
+                                    @if(col.filterActive){
+                                    <p-columnFilter type="text" [field]="col.field" display="menu" />
+                                    }
+                                </div>
                             </th>
-                            }
                             }
                         </tr>
                     </ng-template>
@@ -47,7 +52,7 @@
                         let-editing="editing">
                         <tr>
                             <td>
-                                <p-tableCheckbox [value]="rowData"></p-tableCheckbox>
+                                <p-tableCheckbox [value]="rowData" />
                             </td>
                             @for (col of columns; track $index) {
                             @if (col.field === "type") {
@@ -62,22 +67,24 @@
                             <td>
                                 <p-inputSwitch inputId="isFixed" name="isFixed"
                                     (onChange)="updateRow(index, $event.checked, col.field)"
-                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
-                                    trueValue="fixed" falseValue="notFixed"></p-inputSwitch>
+                                    [ngModel]="rowData[col.field]"
+                                    [ngModelOptions]="{standalone: true}"></p-inputSwitch>
                             </td>
                             }
                             @else if (col.field === "paid") {
                             <td>
                                 <p-inputSwitch inputId="isPaid" name="isPaid"
                                     (onChange)="updateRow(index, $event.checked, col.field)"
-                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-inputSwitch>
+                                    [ngModel]="rowData[col.field]"
+                                    [ngModelOptions]="{standalone: true}"></p-inputSwitch>
                             </td>
                             }
                             @else if (col.field === "recurrence") {
-                            <td>
+                            <td class="align-items-center">
                                 <p-dropdown name="recurrence" [options]="periodOptions" optionLabel="name"
                                     optionValue="code" (onChange)="updateRow(index, $event.value, col.field)"
-                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"></p-dropdown>
+                                    [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
+                                    appendTo="body"></p-dropdown>
                             </td>
                             }
                             @else if (col.field === "category") {
@@ -93,9 +100,8 @@
                             @else if (col.field === "date") {
                             <td class="align-items-center">
                                 <p-calendar [name]="col.field" [ngModel]="rowData[col.field]" [showIcon]="true"
-                                    dateFormat="dd/mm/yy" (onSelect)="updateRow(index, $event, col.field)"
-                                    [baseZIndex]="999" [ngModelOptions]="{standalone: true}"
-                                    appendTo="body"></p-calendar>
+                                    (onSelect)="updateRow(index, $event, col.field)" [baseZIndex]="999"
+                                    [ngModelOptions]="{standalone: true}" appendTo="body"></p-calendar>
                             </td>
                             }
                             @else {
@@ -128,13 +134,14 @@
                     </ng-template>
                     <ng-template pTemplate="emptymessage">
                         <tr>
-                            <td colspan="7">Nothing Found.</td>
+                            <td [attr.colspan]="expenseTableColumnsService.showColumnsSignal().length + 1">Nothing
+                                Found.</td>
                         </tr>
                     </ng-template>
                 </p-table>
             </div>
         </div>
-        @if (showModalNewRowService.showModalNewRow()) {
+        @if (showModalColumnConfigService.showModalColumnConfig()) {
         <app-modal-column-edit></app-modal-column-edit>
         }
     </div>

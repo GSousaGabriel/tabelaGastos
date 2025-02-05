@@ -11,7 +11,7 @@ import { InputNumberModule } from 'primeng/inputnumber';
 import { InputSwitchModule } from 'primeng/inputswitch';
 import { CalendarModule } from 'primeng/calendar';
 import { DialogModule } from 'primeng/dialog';
-import { ShowModalNewRowService } from '../services/show-modal-new-row.service';
+import { ShowModalColumnConfigService } from '../services/show-modal-column-config.service';
 import { ModalColumnEditComponent } from '../features/modal-column-edit/modal-column-edit.component';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ToolbarColumnComponent } from './features/toolbar-column/toolbar-column.component';
@@ -32,7 +32,7 @@ export class MainTableComponent {
   @ViewChild(ToolbarTotalsComponent) toolbarTotalsComponent!: ToolbarTotalsComponent;
   @ViewChild(CategoryManagementComponent) categoryManagementComponent!: CategoryManagementComponent;
 
-  expenses: WritableSignal<any> = signal([]);
+  expenses: WritableSignal<any[]> = signal([]);
   categoryOptions: WritableSignal<DropdownField[]> = signal([]);
   types = [
     { code: "expense", name: "Expense" },
@@ -42,20 +42,26 @@ export class MainTableComponent {
   periodOptions: DropdownField[] = [];
   categories = this.categoryService.showCategorySignal();
   selectedExpenses!: any;
+  filterPeriod = new Date();
 
   constructor(
     private mainTableService: MainTableService,
-    protected showModalNewRowService: ShowModalNewRowService,
+    protected showModalColumnConfigService: ShowModalColumnConfigService,
     protected expenseTableColumnsService: ExpenseTableColumnsService,
     private categoryService: ExpenseCategoriesService,
     private messageService: MessageService
   ) { }
 
   ngOnInit() {
-    this.mainTableService.getFinancialData().subscribe({
+    this.loadTable()
+  }
+
+  loadTable() {
+    this.expenses.set([])
+    this.mainTableService.getFinancialData(this.filterPeriod).subscribe({
       next: (response) => {
+        this.expenseTableColumnsService.manageColumns(Object.keys(response.data[0]))
         this.expenses.set(response.data);
-        this.addRow(-1);
 
         for (let index = 0; index < 24; index++) {
           const fixedValue = (index + 1);
@@ -64,16 +70,17 @@ export class MainTableComponent {
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: err.statusText });
+        this.addRow(-1);
+      },
+      complete: () => {
+        this.addRow(-1);
       },
     });
   }
 
   updateRow(index: number, updatedValue: any, column: string) {
-    const newRow = this.addRow(index);
-
-    if (newRow) {
-      return
-    }
+    this.addRow(index);
+    const itemId = this.expenses()[index]["_id"]
 
     if (this.timeoutItem) {
       clearTimeout(this.timeoutItem);
@@ -81,6 +88,7 @@ export class MainTableComponent {
 
     this.timeoutItem = setTimeout(() => {
       this.updateTableData(false, { index, updatedValue, column });
+      this.mainTableService.updateAddItem(itemId, column, updatedValue)
       this.toolbarTotalsComponent.setTotals();
     }, 200);
 
@@ -104,6 +112,7 @@ export class MainTableComponent {
     this.updateTableData(false, null, true);
     this.selectedExpenses = null;
     this.toolbarTotalsComponent.setTotals();
+    this.addRow(-1);
     this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
 
   }
@@ -126,19 +135,15 @@ export class MainTableComponent {
 
   getBlankRow(indexRow: number) {
     const cols = this.expenseTableColumnsService.showColumnsSignal();
-    const newRow: { [key: string]: number | string | { name: string, code: string } } = {};
+    const newRow: { [key: string]: number | string | Date | { name: string, code: string } } = {};
 
     for (let index = 0; index < cols.length; index++) {
       const field = cols[index].field;
 
-      if (field === "id") {
-        newRow[field] = indexRow + 2;
-        continue
-      }
-
       newRow[field] = cols[index].defaultValue;
     }
 
+    newRow["_id"] = indexRow + 2;
     return newRow
   }
 
