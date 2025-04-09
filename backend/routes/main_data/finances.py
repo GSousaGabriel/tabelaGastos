@@ -1,7 +1,7 @@
 from bson import ObjectId
 from fastapi import APIRouter, Request, status
 from fastapi.responses import JSONResponse
-from backend.utils.get_database import get_database
+from utils.get_database import get_database
 from datetime import datetime
 
 router = APIRouter(

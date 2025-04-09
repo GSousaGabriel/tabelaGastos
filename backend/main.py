@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from backend.routes.authAPI import user
-from backend.routes.main_data import finances
-from backend.utils.get_database import get_database
+from routes.authAPI import user
+from routes.main_data import finances
+from utils.get_database import get_database
 from starlette.middleware.cors import CORSMiddleware
 
 app = FastAPI()

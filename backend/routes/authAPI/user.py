@@ -2,7 +2,7 @@ from fastapi import APIRouter, status
 from fastapi.responses import JSONResponse
 from fastapi.encoders import jsonable_encoder
 from pydantic import BaseModel
-from backend.utils.get_database import get_database
+from utils.get_database import get_database
 
 router = APIRouter(
     prefix="/api/user"

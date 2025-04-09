@@ -1,32 +1,39 @@
 <p-toast />
 <form [formGroup]="fb">
     <div class="login-page">
-        <div class="email">
-            <label for="email">Email</label>
-            <input id="email" name="email" type="text" pInputText formControlName="email"
-                aria-labelledby="email"/>
-        </div>
-        <div class="pass">
-            <label for="password">Password: </label>
-            <p-password id="password" name="password" [toggleMask]="true" formControlName="password"
-                aria-labelledby="password">
-                <ng-template pTemplate="footer">
-                    <p-divider></p-divider>
-                    <p class="mt-2">Suggestions</p>
-                    <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
-                        <li [ngStyle]="{'color': validPassTips().hasLowerCase ? 'green' : 'red'}">At least one lowercase
-                        </li>
-                        <li [ngStyle]="{'color': validPassTips().hasUpperCase ? 'green' : 'red'}">At least one uppercase
-                        </li>
-                        <li [ngStyle]="{'color': validPassTips().hasNumber ? 'green' : 'red'}">At least one numeric</li>
-                        <li [ngStyle]="{'color': validPassTips().lengthIsValid ? 'green' : 'red'}">Minimum 8 characters</li>
-                        <li [ngStyle]="{'color': validPassTips().hasSpecialChar ? 'green' : 'red'}">At least one special
-                            character(&#33;&#64;&#35;&#36;&#37;&#94;&#38;&#42;)</li>
-                    </ul>
-                </ng-template>
-            </p-password>
+        <div class="max-w-20px">
+            <div class="email">
+                <label for="email">Email</label>
+                <input id="email" name="email" type="text" pInputText formControlName="email" aria-labelledby="email" />
+            </div>
+            <div class="pass">
+                <label for="password">Password: </label>
+                <p-password id="password" name="password" [toggleMask]="true" formControlName="password"
+                    aria-labelledby="password">
+                    <ng-template pTemplate="footer">
+                        <p-divider></p-divider>
+                        <p class="mt-2">Suggestions</p>
+                        <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
+                            <li [ngStyle]="{'color': validPassTips().hasLowerCase ? 'green' : 'red'}">At least one
+                                lowercase
+                            </li>
+                            <li [ngStyle]="{'color': validPassTips().hasUpperCase ? 'green' : 'red'}">At least one
+                                uppercase
+                            </li>
+                            <li [ngStyle]="{'color': validPassTips().hasNumber ? 'green' : 'red'}">At least one numeric
+                            </li>
+                            <li [ngStyle]="{'color': validPassTips().lengthIsValid ? 'green' : 'red'}">Minimum 8
+                                characters</li>
+                            <li [ngStyle]="{'color': validPassTips().hasSpecialChar ? 'green' : 'red'}">At least one
+                                special
+                                character(&#33;&#64;&#35;&#36;&#37;&#94;&#38;&#42;)</li>
+                        </ul>
+                    </ng-template>
+                </p-password>
+            </div>
         </div>
         <p-button label="Login" [loading]="loading()" (onClick)="login()"></p-button>
-        <p>Not registered yet? <a routerLink="/user/register" routerLinkActive="active" ariaCurrentWhenActive="page">Register Here!</a></p>
+        <p>Not registered yet? <a routerLink="/user/register" routerLinkActive="active"
+                ariaCurrentWhenActive="page">Register Here!</a></p>
     </div>
 </form>
