@@ -8,9 +8,9 @@
         </div>
         <div class="flex items-center justify-between gap-2">
             <p-button label="Add {{managedData.type}}" icon="pi pi-plus" severity="success"
-                (onClick)="manageCategory(true)"></p-button>
+                [disabled]="!this.fb.get('dataToAdd')?.value" (onClick)="manageCategory(true)"></p-button>
             <p-button label="Remove {{managedData.type}}" icon="pi pi-plus" severity="danger"
-                (onClick)="manageCategory()"></p-button>
+                [disabled]="!this.fb.get('dataToAdd')?.value" (onClick)="manageCategory()"></p-button>
         </div>
     </p-dialog>
 </form>

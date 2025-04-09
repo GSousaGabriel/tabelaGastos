@@ -4,8 +4,8 @@ FROM base AS deps
 
 WORKDIR /app
 
-COPY package.json .
-RUN npm i
+COPY *.json .
+RUN npm ci
 
 COPY . .
 

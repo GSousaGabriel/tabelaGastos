@@ -1,44 +1,46 @@
 <p-toast />
 <form [formGroup]="fb">
     <div
-        class="flex flex-col justify-center items-center flex-wrap flex-wrap pb-20 text-color w-screen h-screen">
+        class="bg-[#3498db] text-white p-5 rounded-[10px] absolute top-1/2 left-1/2 w-[25em] h-[20em] transform -translate-x-1/2 -translate-y-1/2 flex flex-wrap flex-col items-center justify-center">
         <div class="title">
             <h2>
                 Come elevate your financial control!
             </h2>
         </div>
-        <div class="register-form">
-            <div class="email">
-                <label for="email">Email</label>
-                <input id="email" name="email" type="text" pInputText formControlName="email" aria-labelledby="email" />
-            </div>
-            <div class="pass">
-                <label for="password">Password: </label>
-                <p-password id="password" name="password" [toggleMask]="true" formControlName="password"
-                    aria-labelledby="password">
-                    <ng-template pTemplate="footer">
-                        <p-divider></p-divider>
-                        <p class="mt-2">Suggestions</p>
-                        <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
-                            <li [ngStyle]="{'color': validPassTips().hasLowerCase ? 'green' : 'red'}">At least one
-                                lowercase
-                            </li>
-                            <li [ngStyle]="{'color': validPassTips().hasUpperCase ? 'green' : 'red'}">At least one
-                                uppercase
-                            </li>
-                            <li [ngStyle]="{'color': validPassTips().hasNumber ? 'green' : 'red'}">At least one numeric
-                            </li>
-                            <li [ngStyle]="{'color': validPassTips().lengthIsValid ? 'green' : 'red'}">Minimum 8
-                                characters</li>
-                            <li [ngStyle]="{'color': validPassTips().hasSpecialChar ? 'green' : 'red'}">At least one
-                                special
-                                character(&#33;&#64;&#35;&#36;&#37;&#94;&#38;&#42;)</li>
-                        </ul>
-                    </ng-template>
-                </p-password>
-            </div>
+        <div class="email">
+            <label for="email">Email</label>
+            <input id="email" name="email" type="text" pInputText formControlName="email" aria-labelledby="email" />
+        </div>
+        <div class="pass">
+            <label for="password">Password: </label>
+            <p-password id="password" name="password" [toggleMask]="true" formControlName="password"
+                aria-labelledby="password">
+                <ng-template pTemplate="footer">
+                    <p-divider></p-divider>
+                    <p class="mt-2">Suggestions</p>
+                    <ul class="pl-2 ml-2 mt-0" style="line-height: 1.5">
+                        <li [ngStyle]="{'color': validPassTips().hasLowerCase ? 'green' : 'red'}">At least one
+                            lowercase
+                        </li>
+                        <li [ngStyle]="{'color': validPassTips().hasUpperCase ? 'green' : 'red'}">At least one
+                            uppercase
+                        </li>
+                        <li [ngStyle]="{'color': validPassTips().hasNumber ? 'green' : 'red'}">At least one numeric
+                        </li>
+                        <li [ngStyle]="{'color': validPassTips().lengthIsValid ? 'green' : 'red'}">Minimum 8
+                            characters</li>
+                        <li [ngStyle]="{'color': validPassTips().hasSpecialChar ? 'green' : 'red'}">At least one
+                            special
+                            character(&#33;&#64;&#35;&#36;&#37;&#94;&#38;&#42;)</li>
+                    </ul>
+                </ng-template>
+            </p-password>
+        </div>
+        <div class="flex items-center flex-col gap-3 pt-2">
             <p-button label="Register" [loading]="loading()" (onClick)="register()"></p-button>
-            <p>Go back to <a routerLink="/user/login" routerLinkActive="active" ariaCurrentWhenActive="page">login page</a></p>
+            <p>Go back to <a class="hover:underline" routerLink="/user/login" routerLinkActive="active"
+                    ariaCurrentWhenActive="page">login
+                    page</a></p>
         </div>
     </div>
 </form>

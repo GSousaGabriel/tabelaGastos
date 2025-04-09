@@ -21,12 +21,11 @@
         <label class="mr-4">Total by {{fb.get('categorySelected')?.value}}: {{totals().category | reais}}</label>
         }
         <form [formGroup]="fb">
-            <span class="p-float-label">
-                <p-dropdown [options]="categories" formControlName="categorySelected" placeholder="Select a Category"
-                    (onChange)="setTotals()" optionLabel="name" optionValue="code"
-                    inputId="categorySelected"></p-dropdown>
+            <p-floatlabel class="w-full md:w-56" variant="on">
+                <p-select class="w-full md:w-56" [options]="categories" formControlName="categorySelected" (onChange)="setTotals()"
+                    optionLabel="name" optionValue="code" inputId="categorySelected"></p-select>
                 <label for="categorySelected">Select a Category</label>
-            </span>
+            </p-floatlabel>
         </form>
     </ng-template>
 </p-toolbar>

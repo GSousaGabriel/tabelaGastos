@@ -13,12 +13,11 @@ import { PasswordModule } from 'primeng/password';
 import { ToastModule } from 'primeng/toast';
 
 @Component({
-  selector: 'app-register',
-  standalone: true,
-  imports: [ReactiveFormsModule, NgStyle, InputTextModule, PasswordModule, DividerModule, ButtonModule, ToastModule, RouterLink, RouterLinkActive],
-  providers: [MessageService],
-  templateUrl: './register.component.html',
-  styleUrl: './register.component.scss'
+    selector: 'app-register',
+    imports: [ReactiveFormsModule, NgStyle, InputTextModule, PasswordModule, DividerModule, ButtonModule, ToastModule, RouterLink, RouterLinkActive],
+    providers: [MessageService],
+    templateUrl: './register.component.html',
+    styleUrl: './register.component.css'
 })
 export class RegisterComponent {
   validPassTips = signal<passValidation>({

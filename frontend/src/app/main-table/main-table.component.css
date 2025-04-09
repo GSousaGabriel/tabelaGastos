@@ -5,3 +5,9 @@
 ::ng-deep .p-datatable-wrapper{
     max-height: calc(100vh - 16em);
 }
+
+td{
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

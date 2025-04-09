@@ -1,11 +1,10 @@
 import { Component, signal } from '@angular/core';
-import { AbstractControl, FormBuilder, FormControl, ReactiveFormsModule, ValidationErrors, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { ButtonModule } from 'primeng/button';
 import { DividerModule } from 'primeng/divider';
 import { ToastModule } from 'primeng/toast';
-import { NgStyle } from '@angular/common';
 import { UserService } from '../user.service';
 import { passValidation } from '../../models/passValidation.model';
 import { User } from '../../models/user.model';
@@ -14,11 +13,10 @@ import { MessageService } from 'primeng/api';
 
 @Component({
   selector: 'app-login',
-  standalone: true,
-  imports: [ReactiveFormsModule, NgStyle, InputTextModule, PasswordModule, DividerModule, ButtonModule, ToastModule, RouterLink, RouterLinkActive],
+  imports: [ReactiveFormsModule, InputTextModule, PasswordModule, DividerModule, ButtonModule, ToastModule, RouterLink, RouterLinkActive],
   providers: [MessageService],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.scss'
+  styleUrl: './login.component.css'
 })
 export class LoginComponent {
   validPassTips = signal<passValidation>({
@@ -31,7 +29,7 @@ export class LoginComponent {
   loading = signal(false);
   fb = this.formBuilder.group({
     email: new FormControl('', [Validators.required, Validators.minLength(1)]),
-    password: new FormControl('', [this.validPass.bind(this)]),
+    password: new FormControl('', [Validators.required, Validators.minLength(1)]),
   });
 
   constructor(
@@ -71,39 +69,5 @@ export class LoginComponent {
     }
 
     return user
-  }
-
-  validatePassTips(pass: string) {
-    const hasLowerCase = /[a-z]/.test(pass);
-    const hasUpperCase = /[A-Z]/.test(pass);
-    const hasNumber = /\d/.test(pass);
-    const lengthIsValid = pass.length >= 8;
-    const hasSpecialChar = /[!@#$%^&*]/.test(pass);
-
-    this.validPassTips.update(newValue => ({
-      ...newValue,
-      hasLowerCase,
-      hasUpperCase,
-      hasNumber,
-      lengthIsValid,
-      hasSpecialChar
-    }));
-  }
-
-  validPass(control: AbstractControl): ValidationErrors | null {
-    const value = control.value;
-    this.validatePassTips(value)
-
-    if (!value) {
-      return null;
-    }
-
-    const validPassCriterias: passValidation = this.validPassTips();
-    const keys = Object.keys(validPassCriterias);
-    for (let index = 0; index < keys.length; index++) {
-      if (!validPassCriterias[keys[index]]) return { passValidation: true }
-    }
-
-    return null;
   }
 }

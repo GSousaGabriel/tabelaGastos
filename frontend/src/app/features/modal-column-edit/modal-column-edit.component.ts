@@ -8,11 +8,10 @@ import { ExpenseTableColumnsService } from '../../services/expense-table-columns
 import { InputSwitchModule } from 'primeng/inputswitch';
 
 @Component({
-  selector: 'app-modal-column-edit',
-  standalone: true,
-  imports: [FormsModule, ButtonModule, DialogModule, InputSwitchModule],
-  templateUrl: './modal-column-edit.component.html',
-  styleUrl: './modal-column-edit.component.scss'
+    selector: 'app-modal-column-edit',
+    imports: [FormsModule, ButtonModule, DialogModule, InputSwitchModule],
+    templateUrl: './modal-column-edit.component.html',
+    styleUrl: './modal-column-edit.component.css'
 })
 
 export class ModalColumnEditComponent {

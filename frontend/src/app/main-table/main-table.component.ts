@@ -1,31 +1,20 @@
 import { ExpenseTableColumnsService } from '../services/expense-table-columns.service';
 import { Component, ViewChild, WritableSignal, signal } from '@angular/core';
-import { Table, TableModule } from 'primeng/table';
+import { Table } from 'primeng/table';
 import { MainTableService } from './main-table.service';
-import { ButtonModule } from 'primeng/button';
-import { InputTextModule } from 'primeng/inputtext';
-import { CheckboxModule } from 'primeng/checkbox';
-import { DropdownModule } from 'primeng/dropdown';
 import { MessageService } from 'primeng/api';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { InputSwitchModule } from 'primeng/inputswitch';
-import { CalendarModule } from 'primeng/calendar';
-import { DialogModule } from 'primeng/dialog';
 import { ShowModalColumnConfigService } from '../services/show-modal-column-config.service';
-import { ModalColumnEditComponent } from '../features/modal-column-edit/modal-column-edit.component';
-import { FormsModule, ReactiveFormsModule } from '@angular/forms';
-import { ToolbarColumnComponent } from './features/toolbar-column/toolbar-column.component';
 import { ToolbarTotalsComponent } from './features/toolbar-totals/toolbar-totals.component';
 import { CategoryManagementComponent } from './features/category-management/category-management.component';
 import { DropdownField } from '../interfaces/dropdownField';
 import { ExpenseCategoriesService } from '../services/expense-categories.service';
+import { ImportsModuleMainTable } from './imports';
 
 @Component({
   selector: 'app-main-table',
-  standalone: true,
-  imports: [ModalColumnEditComponent, ToolbarColumnComponent, ToolbarTotalsComponent, CategoryManagementComponent, FormsModule, ReactiveFormsModule, TableModule, DialogModule, ButtonModule, InputTextModule, CheckboxModule, DropdownModule, InputSwitchModule, InputNumberModule, CalendarModule],
+  imports: [ImportsModuleMainTable],
   templateUrl: './main-table.component.html',
-  styleUrl: './main-table.component.scss',
+  styleUrl: './main-table.component.css',
   providers: [MessageService]
 })
 export class MainTableComponent {

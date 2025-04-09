@@ -8,11 +8,10 @@ import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { CategoryManagementComponent } from '../category-management/category-management.component';
 
 @Component({
-  selector: 'app-toolbar-column',
-  standalone: true,
-  imports: [ReactiveFormsModule, ToolbarModule, ButtonModule, InputTextModule, CategoryManagementComponent, SplitButtonModule],
-  templateUrl: './toolbar-column.component.html',
-  styleUrl: './toolbar-column.component.scss'
+    selector: 'app-toolbar-column',
+    imports: [ReactiveFormsModule, ToolbarModule, ButtonModule, InputTextModule, CategoryManagementComponent, SplitButtonModule],
+    templateUrl: './toolbar-column.component.html',
+    styleUrl: './toolbar-column.component.css'
 })
 export class ToolbarColumnComponent {
   @ViewChild(CategoryManagementComponent) categoryManagementComponent!: CategoryManagementComponent;

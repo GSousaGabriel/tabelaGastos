@@ -4,23 +4,23 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { SkeletonModule } from 'primeng/skeleton';
 import { totalExpenseSignal } from '../../../models/totalExpense.model';
 import { ReaisPipe } from "../../../pipes/reais.pipe";
-import { DropdownModule } from 'primeng/dropdown';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ExpenseCategoriesService } from '../../../services/expense-categories.service';
 import { DropdownField } from '../../../interfaces/dropdownField';
+import { FloatLabelModule } from 'primeng/floatlabel';
+import { SelectModule } from 'primeng/select';
 
 @Component({
-  selector: 'app-toolbar-totals',
-  standalone: true,
-  templateUrl: './toolbar-totals.component.html',
-  styleUrl: './toolbar-totals.component.scss',
-  imports: [ReactiveFormsModule, ToolbarModule, ButtonModule, DropdownModule, ReaisPipe, SkeletonModule]
+    selector: 'app-toolbar-totals',
+    templateUrl: './toolbar-totals.component.html',
+    styleUrl: './toolbar-totals.component.css',
+    imports: [ReactiveFormsModule, ToolbarModule, ButtonModule, SelectModule, ReaisPipe, SkeletonModule, FloatLabelModule]
 })
 export class ToolbarTotalsComponent {
   totals: WritableSignal<totalExpenseSignal> = signal({ total: "0", paid: "0", fixed: "0", category: "0" });
   categories = this.expenseCategoriesService.showCategorySignal()["expense"] as DropdownField[];
   fb = this.formBuilder.group({
-    categorySelected: ["",]
+    categorySelected: [undefined,]
   })
   expenses = input<any[]>([]);
   timeoutCalculations!: ReturnType<typeof setTimeout>;

@@ -1,0 +1,6 @@
+@reference "tailwindcss";
+
+.email,
+.pass {
+    @apply inline-grid mb-4 w-56 justify-items-center;
+}

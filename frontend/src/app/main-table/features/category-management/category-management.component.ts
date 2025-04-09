@@ -1,17 +1,17 @@
-import { Component, Input } from '@angular/core';
+import { Component } from '@angular/core';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+import { InputTextModule } from 'primeng/inputtext';
 import { ExpenseCategoriesService } from '../../../services/expense-categories.service';
 import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { ExpenseTableColumnsService } from '../../../services/expense-table-columns.service';
 import { FactoriedVariableArray } from '../../../interfaces/factoriedVariableArray';
 
 @Component({
-  selector: 'app-category-management',
-  standalone: true,
-  imports: [ReactiveFormsModule, DialogModule, ButtonModule],
-  templateUrl: './category-management.component.html',
-  styleUrl: './category-management.component.scss'
+    selector: 'app-category-management',
+    imports: [ReactiveFormsModule, DialogModule, ButtonModule, InputTextModule],
+    templateUrl: './category-management.component.html',
+    styleUrl: './category-management.component.css'
 })
 export class CategoryManagementComponent {
 
@@ -74,9 +74,9 @@ export class CategoryManagementComponent {
 
       if (validValues.length > 0) {
         for (let index = 0; index < validValues.length; index++) {
-          let name = validValues[index].toLowerCase().trim();
-          let code = this.capitalize(name);
-          let fixedFormat = this.managedData.fixFormatDataFn(code, name)
+          const name = validValues[index].toLowerCase().trim();
+          const code = this.capitalize(name);
+          const fixedFormat = this.managedData.fixFormatDataFn(code, name)
           newValues.push(fixedFormat);
         }
       }
