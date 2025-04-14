@@ -1,7 +1,6 @@
 import { NgModule } from "@angular/core";
 import { FormsModule, ReactiveFormsModule } from "@angular/forms";
 import { ButtonModule } from "primeng/button";
-import { CheckboxModule } from "primeng/checkbox";
 import { DatePickerModule } from "primeng/datepicker";
 import { DialogModule } from "primeng/dialog";
 import { IconField } from "primeng/iconfield";
@@ -28,7 +27,6 @@ import { SelectModule } from 'primeng/select';
         DialogModule,
         ButtonModule,
         InputTextModule,
-        CheckboxModule,
         InputSwitchModule,
         InputNumberModule,
         DatePickerModule,
@@ -47,7 +45,6 @@ import { SelectModule } from 'primeng/select';
         DialogModule,
         ButtonModule,
         InputTextModule,
-        CheckboxModule,
         InputSwitchModule,
         InputNumberModule,
         DatePickerModule,

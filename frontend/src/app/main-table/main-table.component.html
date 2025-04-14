@@ -6,13 +6,10 @@
             </div>
             <div class="pd-4 h-[calc(100%_-_140px)]">
                 <p-table [columns]="expenseTableColumnsService.showColumnsSignal()" [value]="expenses()" dataKey="_id"
-                    #dataTable [(selection)]="selectedExpenses" selectionMode="multiple" [scrollable]="true"
+                    #dataTable [scrollable]="true"
                     scrollHeight="flex">
                     <ng-template #caption class="w-auto border-t-1 border-solid">
                         <div class="flex flex-row">
-                            <p-button label="Delete selected items" icon="pi pi-trash" class="ml-4" severity="danger"
-                                (click)="deleteSelectedExpenses()"
-                                [disabled]="!selectedExpenses || !selectedExpenses.length"></p-button>
                             <div class="flex flex-row ml-auto">
                                 <p-datepicker [(ngModel)]="filterPeriod" inputId="filterPeriod" view="month"
                                     dateFormat="mm/yy" [readonlyInput]="true" (onSelect)="loadTable()" />
@@ -30,7 +27,7 @@
                     <ng-template pTemplate="header" styleClass="p-datatable-header" let-columns>
                         <tr>
                             <th style="width: 4rem">
-                                <p-tableHeaderCheckbox />
+                                &nbsp;
                             </th>
                             @for (col of columns; track $index) {
                             <th [pSortableColumn]="col.orderActive ? col.field : ''">
@@ -51,7 +48,8 @@
                         let-editing="editing">
                         <tr>
                             <td>
-                                <p-tableCheckbox [value]="rowData" />
+                                <p-button icon="pi pi-trash" variant="text" severity="danger"
+                                (click)="deleteSelectedExpenses(rowData['_id'])"></p-button>
                             </td>
                             @for (col of columns; track $index) {
                             @if (col.field === "type") {
@@ -115,6 +113,7 @@
                                             (onInput)="updateRow(index, $event.value, col.field)">
                                         </p-inputNumber>
                                     </ng-template>
+
                                     <ng-template pTemplate="output">
                                         {{ rowData[col.field] }}
                                     </ng-template>

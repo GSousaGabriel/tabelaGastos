@@ -49,4 +49,8 @@ export class MainTableService {
       })
     }
   }
+
+  deleteItem(itemId: string): Observable<any> {
+    return this.http.delete(`${this.apiUrl}/finances/${itemId}`)
+  }
 }

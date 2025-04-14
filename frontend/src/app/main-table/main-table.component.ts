@@ -30,7 +30,6 @@ export class MainTableComponent {
   timeoutItem!: any;
   periodOptions: DropdownField[] = [];
   categories = this.categoryService.showCategorySignal();
-  selectedExpenses!: any;
   filterPeriod = new Date();
 
   constructor(
@@ -97,21 +96,28 @@ export class MainTableComponent {
     return false;
   }
 
-  deleteSelectedExpenses() {
-    this.updateTableData(false, null, true);
-    this.selectedExpenses = null;
+  deleteSelectedExpenses(itemId: string) {
+    this.updateTableData(false, null, itemId);
     this.toolbarTotalsComponent.setTotals();
-    this.addRow(-1);
-    this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
 
+    this.mainTableService.deleteItem(itemId).subscribe({
+      next: () => {
+        this.addRow(-1);
+        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products Deleted', life: 3000 });
+      },
+      error: (err) => {
+        this.addRow(-1);
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.statusText });
+      }
+    })
   }
 
-  updateTableData(newRow: boolean, data: any, deleteRow = false) {
+  updateTableData(newRow: boolean, data: any, rowToDelete = "") {
     this.expenses.update(newValue => {
       let updatedValues: any[] = [];
 
-      if (deleteRow) {
-        updatedValues = newValue.filter((val: any) => !this.selectedExpenses?.includes(val));
+      if (rowToDelete) {
+        updatedValues = newValue.filter((val: any) => val["_id"] != rowToDelete);
       } else if (newRow) {
         updatedValues = [...newValue, this.getBlankRow(data)];
       } else {

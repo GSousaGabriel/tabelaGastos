@@ -67,3 +67,14 @@ async def post_finance(req: Request):
         return JSONResponse(content={"message": "No data found!", "status": 401}, status_code=status.HTTP_404_NOT_FOUND)
     except:
         return JSONResponse(content={"message": "Server error!", "status": 500}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    
+@router.delete("/{item_id}", tags=["finances", "delete", "item"])
+async def delete_finance(req: Request, item_id: str):
+    try:
+        user_token = ObjectId(req.headers.get("X-Authentication-Token"))
+        db = get_database()
+        collection = db["finances"]
+        collection.delete_one({"_id": ObjectId(item_id)})
+    except Exception as e:
+        return JSONResponse(content={"message": "Server error!", "status": 500}, status_code=status.HTTP_500_INTERNAL_SERVER_ERROR)
+    return JSONResponse(content={"message": "Item deleted!", "status": 200}, status_code=status.HTTP_200_OK)
