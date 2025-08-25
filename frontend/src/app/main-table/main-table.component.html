@@ -6,10 +6,13 @@
             </div>
             <div class="pd-4 h-[calc(100%_-_140px)]">
                 <p-table [columns]="expenseTableColumnsService.showColumnsSignal()" [value]="expenses()" dataKey="_id"
-                    #dataTable [scrollable]="true"
-                    scrollHeight="flex">
+                    #dataTable [scrollable]="true" scrollHeight="flex">
                     <ng-template #caption class="w-auto border-t-1 border-solid">
                         <div class="flex flex-row">
+                            <div>
+                                <p-button icon="pi pi-save" label="Save changes" severity="success" styleClass="w-40"
+                                    (onClick)="saveItems()"></p-button>
+                            </div>
                             <div class="flex flex-row ml-auto">
                                 <p-datepicker [(ngModel)]="filterPeriod" inputId="filterPeriod" view="month"
                                     dateFormat="mm/yy" [readonlyInput]="true" (onSelect)="loadTable()" />
@@ -49,7 +52,7 @@
                         <tr>
                             <td>
                                 <p-button icon="pi pi-trash" variant="text" severity="danger"
-                                (click)="deleteSelectedExpenses(rowData['_id'])"></p-button>
+                                    (click)="deleteSelectedExpenses(rowData['_id'])"></p-button>
                             </td>
                             @for (col of columns; track $index) {
                             @if (col.field === "type") {
@@ -87,8 +90,9 @@
                             @else if (col.field === "category") {
                             <td class="items-center">
                                 <div class="w-full">
-                                    <p-select class="w-40" [name]="col.field" [options]="categories[rowData.type]" optionLabel="name"
-                                        optionValue="code" (onChange)="updateRow(index, $event.value, col.field)"
+                                    <p-select class="w-40" [name]="col.field" [options]="categories[rowData.type]"
+                                        optionLabel="name" optionValue="code"
+                                        (onChange)="updateRow(index, $event.value, col.field)"
                                         [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
                                         appendTo="body"></p-select>
                                     <i class="pi pi-cog ml-2 cursor-pointer"
@@ -120,7 +124,7 @@
                                     }@else {
                                     <ng-template pTemplate="input">
                                         <input #cellValue pInputText type="text" value="{{rowData[col.field]}}"
-                                            (keyup)="updateRow(index, cellValue.value, col.field)" class="max-w-72"/>
+                                            (keyup)="updateRow(index, cellValue.value, col.field)" class="max-w-72" />
                                     </ng-template>
                                     <ng-template pTemplate="output">
                                         {{ rowData[col.field]}}
@@ -147,3 +151,4 @@
     </div>
 </div>
 <app-category-management></app-category-management>
+<p-toast />

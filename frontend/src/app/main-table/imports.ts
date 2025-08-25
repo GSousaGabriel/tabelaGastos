@@ -14,6 +14,7 @@ import { CategoryManagementComponent } from "./features/category-management/cate
 import { ToolbarColumnComponent } from "./features/toolbar-column/toolbar-column.component";
 import { ToolbarTotalsComponent } from "./features/toolbar-totals/toolbar-totals.component";
 import { SelectModule } from 'primeng/select';
+import { ToastModule } from "primeng/toast";
 
 @NgModule({
     imports: [
@@ -32,7 +33,8 @@ import { SelectModule } from 'primeng/select';
         DatePickerModule,
         InputIcon,
         IconField,
-        SelectModule
+        SelectModule,
+        ToastModule
     ],
     exports: [
         ModalColumnEditComponent,
@@ -50,7 +52,8 @@ import { SelectModule } from 'primeng/select';
         DatePickerModule,
         InputIcon,
         IconField,
-        SelectModule
+        SelectModule,
+        ToastModule
     ],
     providers: []
 })

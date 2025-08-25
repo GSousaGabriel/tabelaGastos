@@ -4,5 +4,5 @@ export interface Column {
     header: string,
     orderActive: boolean,
     filterActive: boolean,
-    defaultValue: string | number | Date
+    defaultValue: string | boolean | number | Date
 }

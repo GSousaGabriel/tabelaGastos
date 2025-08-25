@@ -68,12 +68,12 @@ export class ExpenseTableColumnsService {
   getDefaultColumns() {
     return [
       { field: 'type', orderActive: false, filterActive: false, defaultValue: "expense" },
-      { field: 'fixed', orderActive: false, filterActive: false, defaultValue: "" },
-      { field: 'paid', orderActive: false, filterActive: false, defaultValue: "" },
-      { field: 'recurrence', orderActive: false, filterActive: false, defaultValue: "" },
+      { field: 'fixed', orderActive: false, filterActive: false, defaultValue: false },
+      { field: 'paid', orderActive: false, filterActive: false, defaultValue: false },
+      { field: 'recurrence', orderActive: false, filterActive: false, defaultValue: 1 },
       { field: 'category', orderActive: false, filterActive: false, defaultValue: "" },
       { field: 'date', orderActive: false, filterActive: false, defaultValue: new Date() },
-      { field: 'value', orderActive: false, filterActive: false, defaultValue: "" }
+      { field: 'value', orderActive: false, filterActive: false, defaultValue: 0 }
     ]
   }
 }

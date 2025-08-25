@@ -1,12 +1,13 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, map } from 'rxjs';
+import { Expenses } from './types/payloadExpense';
 
 @Injectable({
   providedIn: 'root'
 })
 export class MainTableService {
-  private apiUrl = 'http://localhost:8000/api';
+  private apiUrl = 'http://localhost:32790/api';
 
   constructor(
     private http: HttpClient
@@ -35,19 +36,20 @@ export class MainTableService {
     }
   }
 
-  updateAddItem(itemId: string, field: string, value: boolean | string | Date): Observable<any> {
-    if (typeof itemId === "number") {
-      return this.http.post<{ field: string, value: boolean | string | Date }>(`${this.apiUrl}/finances/`, {
-        itemId,
-        field,
-        value
-      })
-    } else {
-      return this.http.patch<{ field: string, value: boolean | string | Date }>(`${this.apiUrl}/finances/${itemId}`, {
-        field,
-        value
-      })
+  saveItems(data: Expenses[]): Observable<Expenses[]> {
+    const additionalLine = data.pop()
+    if (additionalLine && additionalLine.value > 0) {
+      data.push(additionalLine)
     }
+    const newItems = data.filter(item => typeof item._id === 'number' || item._id === '')
+    return this.http.post<Expenses[]>(`${this.apiUrl}/finances/`, newItems)
+  }
+
+  updateItem(itemId: string, field: string, value: boolean | string | Date): Observable<any> {
+    return this.http.patch<{ field: string, value: boolean | string | Date }>(`${this.apiUrl}/finances/${itemId}`, {
+      field,
+      value
+    })
   }
 
   deleteItem(itemId: string): Observable<any> {

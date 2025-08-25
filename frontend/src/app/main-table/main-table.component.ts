@@ -9,6 +9,7 @@ import { CategoryManagementComponent } from './features/category-management/cate
 import { DropdownField } from '../interfaces/dropdownField';
 import { ExpenseCategoriesService } from '../services/expense-categories.service';
 import { ImportsModuleMainTable } from './imports';
+import { Expenses } from './types/payloadExpense';
 
 @Component({
   selector: 'app-main-table',
@@ -21,7 +22,7 @@ export class MainTableComponent {
   @ViewChild(ToolbarTotalsComponent) toolbarTotalsComponent!: ToolbarTotalsComponent;
   @ViewChild(CategoryManagementComponent) categoryManagementComponent!: CategoryManagementComponent;
 
-  expenses: WritableSignal<any[]> = signal([]);
+  expenses: WritableSignal<Expenses[]> = signal([]);
   categoryOptions: WritableSignal<DropdownField[]> = signal([]);
   types = [
     { code: "expense", name: "Expense" },
@@ -42,6 +43,15 @@ export class MainTableComponent {
 
   ngOnInit() {
     this.loadTable()
+
+    this.generateRecurrenceOptions()
+  }
+
+  generateRecurrenceOptions() {
+    for (let index = 0; index < 24; index++) {
+      const fixedValue = (index + 1);
+      this.periodOptions?.push({ name: fixedValue, code: fixedValue });
+    }
   }
 
   loadTable() {
@@ -49,12 +59,8 @@ export class MainTableComponent {
     this.mainTableService.getFinancialData(this.filterPeriod).subscribe({
       next: (response) => {
         this.expenseTableColumnsService.manageColumns(Object.keys(response.data[0]))
+        this.categoryService.setCustomCategories(response.data)
         this.expenses.set(response.data);
-
-        for (let index = 0; index < 24; index++) {
-          const fixedValue = (index + 1);
-          this.periodOptions?.push({ name: fixedValue, code: fixedValue });
-        }
       },
       error: (err) => {
         this.messageService.add({ severity: 'error', summary: 'Error', detail: err.statusText });
@@ -76,9 +82,19 @@ export class MainTableComponent {
 
     this.timeoutItem = setTimeout(() => {
       this.updateTableData(false, { index, updatedValue, column });
-      this.mainTableService.updateAddItem(itemId, column, updatedValue)
       this.toolbarTotalsComponent.setTotals();
-    }, 200);
+
+      if (typeof itemId != "number") {
+        this.mainTableService.updateItem(itemId, column, updatedValue).subscribe({
+          next: () => {
+            this.messageService.add({ severity: 'success', summary: 'Success', detail: 'Item updated successfully' });
+          },
+          error: (err) => {
+            this.messageService.add({ severity: 'error', summary: 'Error', detail: err.statusText });
+          }
+        });
+      }
+    }, 500);
 
   }
 
@@ -130,7 +146,7 @@ export class MainTableComponent {
 
   getBlankRow(indexRow: number) {
     const cols = this.expenseTableColumnsService.showColumnsSignal();
-    const newRow: { [key: string]: number | string | Date | { name: string, code: string } } = {};
+    const newRow: { [key: string]: number | boolean | string | Date | { name: string, code: string } } = {};
 
     for (let index = 0; index < cols.length; index++) {
       const field = cols[index].field;
@@ -144,5 +160,16 @@ export class MainTableComponent {
 
   clear(table: Table) {
     table.clear();
+  }
+
+  saveItems() {
+    this.mainTableService.saveItems([...this.expenses()]).subscribe({
+      next: () => {
+        this.messageService.add({ severity: 'success', summary: 'Successful', detail: 'Products saved successfully', life: 3000 });
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: err.statusText });
+      }
+    });
   }
 }

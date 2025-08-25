@@ -42,7 +42,7 @@ testem.log
 Thumbs.db
 
 #venv
-backend/venv
+backend/.venv
 
 #cache python
-backend/__pycache__
+backend/__pycache__/

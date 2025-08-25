@@ -35,11 +35,30 @@ export class ExpenseCategoriesService {
     const defaultCategories = this.getDefaultCategories(type);
 
     for (let index = 0; index < defaultCategories.length; index++) {
-      const name = defaultCategories[index][0].toUpperCase() + defaultCategories[index].slice(1);
+      const name = this.setupCategoryName(defaultCategories[index]);
 
       defaultCategoriesSignal.push({ name, code: defaultCategories[index] });
     }
     this.setCategories(defaultCategoriesSignal, type)
+  }
+
+  setCustomCategories(data: any) {
+    const defaultExpenses = [...this.getDefaultCategories("expense"), ...this.getDefaultCategories("income")];
+    const newExpenses = [];
+    const newIncomes = [];
+
+    for (const item of data) {
+      if (!defaultExpenses.includes(item.category)) {
+        const newCategory = { name: this.setupCategoryName(item.category), code: item.category }
+        if(item.type === "expense"){
+          newExpenses.push(newCategory)
+        }else{
+        newIncomes.push(newCategory)
+      }
+      }
+    }
+    this.updateCategories(newExpenses, "expense");
+    this.updateCategories(newIncomes, "income");
   }
 
   getDefaultCategories(type: string) {
@@ -48,5 +67,9 @@ export class ExpenseCategoriesService {
     } else {
       return ["Gift", "Investment", "Rewards", "Salary"]
     }
+  }
+
+  private setupCategoryName(name: string){
+    return name[0].toUpperCase() + name.slice(1);
   }
 }
