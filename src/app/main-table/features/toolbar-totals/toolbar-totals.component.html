@@ -1,0 +1,42 @@
+<div class="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    @for (tile of tiles; track tile.key) {
+    <article class="flex flex-col rounded-xl border border-line bg-card p-4 shadow-md">
+        <div class="flex items-center gap-2 text-sm font-medium text-label">
+            <i [class]="tile.icon + ' text-muted'" aria-hidden="true"></i>
+            {{ tile.label }}
+        </div>
+        @if (loadingTotals) {
+        <p-skeleton width="9rem" height="2rem" styleClass="mt-2" />
+        } @else {
+        <p class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ totals()[tile.key] | reais }}</p>
+        }
+        @if (tile.key === 'paid') {
+        <div class="mt-auto flex items-center gap-3 pt-2 text-sm text-muted">
+            <p-progressbar [value]="paidPercent" [showValue]="false" class="flex-1" ariaLabel="Share of total paid" />
+            <span class="tabular-nums">{{ paidPercent }}% of total</span>
+        </div>
+        } @else {
+        <p class="m-0 mt-auto pt-2 text-sm text-muted">{{ tile.hint }}</p>
+        }
+    </article>
+    }
+
+    <article class="flex flex-col rounded-xl border border-line bg-card p-4 shadow-md">
+        <label for="categorySelected" class="flex items-center gap-2 text-sm font-medium text-label">
+            <i class="pi pi-tag text-muted" aria-hidden="true"></i>
+            By category
+        </label>
+        @if (loadingTotals) {
+        <p-skeleton width="9rem" height="2rem" styleClass="mt-2" />
+        } @else if (fb.get('categorySelected')?.value) {
+        <p class="m-0 mt-1 text-2xl font-semibold tabular-nums">{{ totals().category | reais }}</p>
+        } @else {
+        <p class="m-0 mt-1 text-2xl font-semibold text-muted">&mdash;</p>
+        }
+        <form [formGroup]="fb" class="mt-auto pt-2">
+            <p-select [options]="categories" formControlName="categorySelected" (onChange)="setTotals()"
+                optionLabel="name" optionValue="code" inputId="categorySelected" placeholder="Select a category"
+                size="small" [fluid]="true"></p-select>
+        </form>
+    </article>
+</div>

@@ -1,0 +1,15 @@
+<p-dialog [header]="header" [(visible)]="visible" [modal]="true" [style]="{ width: '26rem' }"
+    [breakpoints]="{ '640px': '92vw' }" [draggable]="false" [resizable]="false" (onHide)="closeModal()">
+    <ul class="m-0 list-none p-0">
+        @for (column of columns; track $index) {
+        <li class="flex items-center justify-between gap-4 border-b border-line py-2.5 last:border-b-0">
+            <label [for]="'column-' + $index">{{column.header}}</label>
+            <p-toggleswitch [inputId]="'column-' + $index" (onChange)="updateOrderingRows($index)"
+                [ngModel]="type === 'filter' ? column.filterActive : column.orderActive"></p-toggleswitch>
+        </li>
+        }
+    </ul>
+    <ng-template pTemplate="footer">
+        <p-button (click)="closeModal()" icon="pi pi-check" label="Done"></p-button>
+    </ng-template>
+</p-dialog>

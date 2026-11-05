@@ -1,0 +1,159 @@
+<div class="flex h-dvh flex-col">
+<header class="flex shrink-0 items-center justify-between border-b border-line bg-card px-4 py-3 md:px-6">
+    <div class="flex items-center gap-3">
+        <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-700 text-white" aria-hidden="true">
+            <i class="pi pi-wallet text-lg"></i>
+        </span>
+        <div>
+            <h1 class="m-0 text-lg leading-tight font-semibold">Financial Control</h1>
+            <p class="m-0 hidden text-sm text-muted sm:block">Welcome to your financial control</p>
+        </div>
+    </div>
+    <img class="h-11 w-11 rounded-full object-cover" src="assets/images/sift.jpg" alt="Profile photo" />
+</header>
+<main class="min-h-0 flex-1 overflow-auto">
+<div class="flex flex-col gap-4 p-4 md:p-6 lg:h-full">
+    <app-toolbar-totals class="shrink-0" [expenses]="expenses()"></app-toolbar-totals>
+
+    <div class="h-[36rem] overflow-hidden rounded-xl border border-line bg-card shadow-md lg:h-auto lg:min-h-0 lg:flex-1">
+        <p-table class="block h-full" [columns]="expenseTableColumnsService.showColumnsSignal()" [value]="expenses()"
+            dataKey="_id" #dataTable [loading]="loading" [scrollable]="true" scrollHeight="flex" size="small" [rowHover]="true">
+            <ng-template #caption>
+                <div class="flex flex-wrap items-center gap-3">
+                    <p-button icon="pi pi-save" label="Save changes" (onClick)="saveItems()"></p-button>
+                    <div class="flex flex-wrap items-center gap-3 lg:ml-auto">
+                        <p-datepicker [(ngModel)]="filterPeriod" inputId="filterPeriod" view="month" dateFormat="mm/yy"
+                            [readonlyInput]="true" [showIcon]="true" iconDisplay="input" styleClass="w-36"
+                            ariaLabel="Month to display" (onSelect)="loadTable()" />
+                        <p-iconfield>
+                            <p-inputicon styleClass="pi pi-search" />
+                            <input type="text" pInputText placeholder="Search" aria-label="Search entries"
+                                (input)="dataTable.filterGlobal($any($event.target).value, 'contains')" />
+                        </p-iconfield>
+                        <app-toolbar-column></app-toolbar-column>
+                    </div>
+                </div>
+            </ng-template>
+            <ng-template pTemplate="header" let-columns>
+                <tr>
+                    <th class="w-14"><span class="sr-only">Actions</span></th>
+                    @for (col of columns; track $index) {
+                    <th [pSortableColumn]="col.orderActive ? col.field : ''">
+                        <div class="flex items-center gap-1 text-sm whitespace-nowrap">
+                            {{ col.header }}
+                            @if (col.orderActive) {
+                            <p-sortIcon [field]="col.field" pSortableColumnDisabled="false" />
+                            }
+                            @if(col.filterActive){
+                            <p-columnFilter type="text" [field]="col.field" display="menu" />
+                            }
+                        </div>
+                    </th>
+                    }
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="body" let-rowData let-index="rowIndex" let-columns="columns"
+                let-editing="editing">
+                <tr>
+                    <td>
+                        <p-button icon="pi pi-trash" [text]="true" [rounded]="true" severity="danger" size="small"
+                            ariaLabel="Delete entry" (click)="deleteSelectedExpenses(rowData['_id'])"></p-button>
+                    </td>
+                    @for (col of columns; track $index) {
+                    @if (col.field === "type") {
+                    <td>
+                        <p-select styleClass="w-32" size="small" [name]="col.field" [options]="types"
+                            optionLabel="name" optionValue="code" ariaLabel="Type"
+                            (onChange)="updateRow(index, $event.value, col.field)" [ngModel]="rowData[col.field]"
+                            [ngModelOptions]="{standalone: true}" appendTo="body"></p-select>
+                    </td>
+                    }
+                    @else if (col.field === "fixed" || col.field === "paid") {
+                    <td>
+                        <p-toggleswitch [name]="col.field" [ariaLabel]="col.header"
+                            (onChange)="updateRow(index, $event.checked, col.field)" [ngModel]="rowData[col.field]"
+                            [ngModelOptions]="{standalone: true}"></p-toggleswitch>
+                    </td>
+                    }
+                    @else if (col.field === "installments") {
+                    <td>
+                        <p-select styleClass="w-24" size="small" name="installments" [options]="periodOptions"
+                            optionLabel="name" optionValue="code" ariaLabel="Installments"
+                            (onChange)="updateRow(index, $event.value, col.field)" [ngModel]="rowData[col.field]"
+                            [ngModelOptions]="{standalone: true}" appendTo="body"></p-select>
+                    </td>
+                    }
+                    @else if (col.field === "category") {
+                    <td>
+                        <div class="flex items-center gap-1">
+                            <p-select styleClass="w-40" size="small" [name]="col.field"
+                                [options]="categories[rowData.type]" optionLabel="name" optionValue="code"
+                                ariaLabel="Category" (onChange)="updateRow(index, $event.value, col.field)"
+                                [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
+                                appendTo="body"></p-select>
+                            <p-button icon="pi pi-cog" [text]="true" [rounded]="true" severity="secondary" size="small"
+                                ariaLabel="Manage categories"
+                                (onClick)="categoryManagementComponent.visible= true; categoryManagementComponent.setDataManager(rowData.type)"></p-button>
+                        </div>
+                    </td>
+                    }
+                    @else if (col.field === "date") {
+                    <td>
+                        <p-datepicker styleClass="w-40" size="small" [name]="col.field" [ngModel]="rowData[col.field]"
+                            [showIcon]="true" iconDisplay="input" ariaLabel="Date"
+                            (onSelect)="updateRow(index, $event, col.field)" [baseZIndex]="999"
+                            [ngModelOptions]="{standalone: true}" appendTo="body"></p-datepicker>
+                    </td>
+                    }
+                    @else {
+                    <td class="max-w-72 truncate" [pEditableColumn]="rowData[col.field]"
+                        pEditableColumnField="{{col.field}}">
+                        <p-cellEditor>
+                            @if (col.field === "value") {
+                            <ng-template pTemplate="input">
+                                <p-inputNumber size="small" inputId="value" mode="currency" currency="BRL"
+                                    locale="pt-BR" [ngModel]="rowData[col.field]" [ngModelOptions]="{standalone: true}"
+                                    (onInput)="updateRow(index, $event.value, col.field)">
+                                </p-inputNumber>
+                            </ng-template>
+
+                            <ng-template pTemplate="output">
+                                <span class="font-medium tabular-nums"
+                                    [class.text-accent]="rowData.type === 'income'">{{ rowData[col.field] | reais
+                                    }}</span>
+                            </ng-template>
+                            }@else {
+                            <ng-template pTemplate="input">
+                                <input #cellValue pInputText pSize="small" type="text" value="{{rowData[col.field]}}"
+                                    (keyup)="updateRow(index, cellValue.value, col.field)" class="max-w-72" />
+                            </ng-template>
+                            <ng-template pTemplate="output">
+                                {{ rowData[col.field]}}
+                            </ng-template>
+                            }
+                        </p-cellEditor>
+                    </td>
+                    }
+                    }
+                </tr>
+            </ng-template>
+            <ng-template pTemplate="emptymessage">
+                <tr>
+                    <td [attr.colspan]="expenseTableColumnsService.showColumnsSignal().length + 1">
+                        <div class="flex flex-col items-center gap-2 py-12 text-muted">
+                            <i class="pi pi-inbox text-3xl text-muted" aria-hidden="true"></i>
+                            Nothing found.
+                        </div>
+                    </td>
+                </tr>
+            </ng-template>
+        </p-table>
+    </div>
+    @if (showModalColumnConfigService.showModalColumnConfig()) {
+    <app-modal-column-edit></app-modal-column-edit>
+    }
+</div>
+</main>
+</div>
+<app-category-management></app-category-management>
+<p-toast />

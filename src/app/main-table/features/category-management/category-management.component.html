@@ -1,0 +1,19 @@
+<form [formGroup]="fb">
+    <p-dialog [(visible)]="visible" header="Manage {{managedData.type}}" [modal]="true" [draggable]="false"
+        [resizable]="false" [style]="{ width: '28rem' }" [breakpoints]="{ '640px': '92vw' }">
+        <div class="flex flex-col gap-1.5">
+            <label for="dataToAdd" class="text-sm font-medium text-label">Names</label>
+            <input pInputText id="dataToAdd" formControlName="dataToAdd" type="text" [fluid]="true"
+                aria-describedby="dataToAdd-help" />
+            <small id="dataToAdd-help" class="text-muted">To insert multiple {{managedData.type}}, separate them
+                with a comma (data,test).</small>
+        </div>
+        <ng-template pTemplate="footer">
+            <p-button label="Remove" icon="pi pi-trash" severity="danger" [outlined]="true"
+                [disabled]="!this.fb.get('dataToAdd')?.value" (onClick)="manageCategory()"></p-button>
+            <p-button label="Add" icon="pi pi-plus"
+                [disabled]="!this.fb.get('dataToAdd')?.value" (onClick)="manageCategory(true)"></p-button>
+        </ng-template>
+    </p-dialog>
+</form>
+<p-toast />

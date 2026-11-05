@@ -1,0 +1,27 @@
+<p-toast />
+<app-auth-layout heading="Welcome back" subheading="Log in to review your finances.">
+    <form [formGroup]="fb" (ngSubmit)="login()" class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1.5">
+            <label for="email" class="text-sm font-medium text-label">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" pInputText [fluid]="true"
+                placeholder="you@example.com" formControlName="email" />
+            @if (fb.controls.email.touched && fb.controls.email.invalid) {
+            <small class="text-red-700 dark:text-red-400">Enter your email.</small>
+            }
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label for="password" class="text-sm font-medium text-label">Password</label>
+            <p-password inputId="password" name="password" autocomplete="current-password" [toggleMask]="true"
+                [fluid]="true" [feedback]="false" formControlName="password" />
+            @if (fb.controls.password.touched && fb.controls.password.invalid) {
+            <small class="text-red-700 dark:text-red-400">Enter your password.</small>
+            }
+        </div>
+        <p-button type="submit" label="Log in" icon="pi pi-sign-in" [fluid]="true" [loading]="loading()"
+            styleClass="mt-2" />
+        <p class="m-0 text-center text-sm text-muted">
+            Not registered yet?
+            <a class="font-medium text-accent hover:underline" routerLink="/user/register">Create an account</a>
+        </p>
+    </form>
+</app-auth-layout>

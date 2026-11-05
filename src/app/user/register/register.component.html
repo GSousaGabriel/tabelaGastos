@@ -1,0 +1,36 @@
+<p-toast />
+<app-auth-layout heading="Create your account" subheading="Come elevate your financial control.">
+    <form [formGroup]="fb" (ngSubmit)="register()" class="flex flex-col gap-4">
+        <div class="flex flex-col gap-1.5">
+            <label for="email" class="text-sm font-medium text-label">Email</label>
+            <input id="email" name="email" type="email" autocomplete="email" pInputText [fluid]="true"
+                placeholder="you@example.com" formControlName="email" />
+        </div>
+        <div class="flex flex-col gap-1.5">
+            <label for="password" class="text-sm font-medium text-label">Password</label>
+            <p-password inputId="password" name="password" autocomplete="new-password" [toggleMask]="true"
+                [fluid]="true" formControlName="password">
+                <ng-template pTemplate="footer">
+                    <p-divider></p-divider>
+                    <p class="m-0 mb-2 text-sm font-medium">Your password needs</p>
+                    <ul class="m-0 flex list-none flex-col gap-1 p-0 text-sm">
+                        @for (rule of passwordRules; track rule.key) {
+                        <li class="flex items-center gap-2"
+                            [class]="validPassTips()[rule.key] ? 'text-accent' : 'text-muted'">
+                            <i [class]="validPassTips()[rule.key] ? 'pi pi-check-circle' : 'pi pi-circle'"
+                                aria-hidden="true"></i>
+                            {{ rule.label }}
+                        </li>
+                        }
+                    </ul>
+                </ng-template>
+            </p-password>
+        </div>
+        <p-button type="submit" label="Create account" icon="pi pi-user-plus" [fluid]="true" [loading]="loading()"
+            styleClass="mt-2" />
+        <p class="m-0 text-center text-sm text-muted">
+            Already have an account?
+            <a class="font-medium text-accent hover:underline" routerLink="/user/login">Log in</a>
+        </p>
+    </form>
+</app-auth-layout>

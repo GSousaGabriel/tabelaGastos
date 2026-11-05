@@ -1,0 +1,36 @@
+/* Layer order lets Tailwind utilities override PrimeNG without !important or ::ng-deep. */
+@layer theme, base, primeng, components, utilities;
+
+@import "primeicons/primeicons.css";
+@import "tailwindcss";
+
+/* Semantic colours for Tailwind utilities (bg-card, text-muted...). Most reuse PrimeNG's
+   variables, so templates follow the active colour scheme without dark: variants. */
+@theme inline {
+  --color-page: var(--app-page);
+  --color-ink: var(--app-ink);
+  --color-card: var(--p-content-background);
+  --color-line: var(--p-content-border-color);
+  --color-label: var(--p-text-color);
+  --color-muted: var(--p-text-muted-color);
+  --color-accent: var(--p-primary-color);
+}
+
+/* Defined here, not in the PrimeNG preset, so the first paint has the right colours. */
+:root {
+  color-scheme: light dark;
+  --app-page: #b4b9bf;
+  --app-ink: #0f172a;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --app-page: #09090b;
+    --app-ink: #f4f4f5;
+  }
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--p-content-border-color) transparent;
+}
