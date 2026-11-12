@@ -1,4 +1,4 @@
-import { Component, signal } from '@angular/core';
+import { Component, HostListener, signal } from '@angular/core';
 import { FormBuilder, FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
@@ -42,10 +42,10 @@ export class LoginComponent {
     private messageService: MessageService
   ) { }
 
-  login(): void {
+  login(provider?: string): void {
     if (this.fb.valid) {
       this.loading.update(newValue => !newValue);
-      this.validateUserService.validateLogin(this.getUserData()).subscribe({
+      this.validateUserService.validateLogin(provider).subscribe({
         next: (response) => {
           this.messageService.add({ severity: 'success', summary: 'Success!', detail: response.message });
 
@@ -68,12 +68,33 @@ export class LoginComponent {
     }
   }
 
-  getUserData(): User {
-    const user = {
-      email: this.fb.get("email")!.value as string,
-      password: this.fb.get("password")!.value as string
-    }
+  loginWithProvider(provider: string): void {
+    const width = 500;
+    const height = 700;
+    const left = window.screenX + (window.outerWidth - width) / 2;
+    const top = window.screenY + (window.outerHeight - height) / 2;
 
-    return user
+    window.open(
+      `http://localhost:8000/api/auth/login?provider=${encodeURIComponent(provider)}`,
+      'oauth-login',
+      `popup=yes,width=${width},height=${height},left=${left},top=${top}`
+    );
   }
+
+  @HostListener('window:message', ['$event'])
+  onMessage(e: MessageEvent) {
+    if (e.origin !== window.location.origin) return; 
+    if (e.data?.type === 'oauth-success') this.router.navigate(['/mainTable']);
+    if (e.data?.type === 'oauth-error') this.messageService.add(
+      { severity: 'error', summary: 'Error', detail: e.data.error });
+  }
+
+  // getUserData(): User {
+  //   const user = {
+  //     email: this.fb.get("email")!.value as string,
+  //     password: this.fb.get("password")!.value as string
+  //   }
+
+  //   return user
+  // }
 }

@@ -13,8 +13,8 @@ export class UserService {
     private http: HttpClient
   ) { }
 
-  validateLogin(user: User): Observable<any> {
-    return this.http.post(`${this.apiUrl}/user/login`, user)
+  validateLogin(provider?: string): Observable<any> {
+    return this.http.get(`${this.apiUrl}/auth/login?provider=${provider}`)
   }
 
   registerUser(user: User): Observable<any> {
